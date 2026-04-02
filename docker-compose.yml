@@ -1,0 +1,60 @@
+services:
+  app:
+    build: .
+    container_name: decom-static-app
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: newsdb
+      DB_USERNAME: newsuser
+      DB_PASSWORD: newspass
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD_HASH: '$$2y$$10$$W/qql.sYI8hgRWMe9GbcneF8405tC66RulL7qlZ4PpwpbRKdvOJgS'
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    container_name: decom-static-db
+    environment:
+      MYSQL_DATABASE: newsdb
+      MYSQL_USER: newsuser
+      MYSQL_PASSWORD: newspass
+      MYSQL_ROOT_PASSWORD: rootpass
+    command:
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -uroot -prootpass -e 'SELECT 1' >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 40s
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin:5-apache
+    container_name: decom-static-phpmyadmin
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: rootpass
+    ports:
+      - "8081:80"
+    restart: unless-stopped
+
+volumes:
+  db_data:

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675">
+  <defs>
+    <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#14532d"/>
+      <stop offset="100%" stop-color="#16a34a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#g3)"/>
+  <g fill="#ffffff22">
+    <circle cx="250" cy="180" r="80"/>
+    <circle cx="460" cy="250" r="55"/>
+    <circle cx="680" cy="160" r="70"/>
+    <circle cx="900" cy="250" r="60"/>
+  </g>
+  <path d="M220 420 L420 300 L620 380 L820 260 L1020 340" fill="none" stroke="#dcfce7" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="120" y="540" font-family="Arial, sans-serif" font-size="60" font-weight="700" fill="#ffffff">Pesquisa e Inovação</text>
+</svg>
