@@ -37,8 +37,10 @@ body{background:#f5f7fb}.topbar{font-size:.92rem;background:#102a43;color:#fff}.
 <li><a class="dropdown-item" href="/pessoal/funcionarios.php">Funcionarios</a></li></ul></li>
 <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Ensino</a><ul class="dropdown-menu">
 <li><a class="dropdown-item" href="/ensino/ciencia-computacao.php">Ciencia da Computacao</a></li>
-<li><a class="dropdown-item" href="/ensino/pos-graduacao.php">Pos-graduacao em Computacao</a></li>
-<li><a class="dropdown-item" href="/ensino/pos-processo-seletivo.php">Processo Seletivo (PPGCC)</a></li>
+<li><a class="dropdown-item" href="/pos/inicio.php">Pos-graduacao em Computacao (Subsite)</a></li>
+<li><a class="dropdown-item" href="/pos/noticias.php">Noticias da Pos</a></li>
+<li><a class="dropdown-item" href="/pos/editais.php">Editais da Pos</a></li>
+<li><a class="dropdown-item" href="/pos/processo-seletivo.php">Processo Seletivo (PPGCC)</a></li>
 <li><a class="dropdown-item" href="/ensino/inteligencia-artificial.php">Inteligencia Artificial</a></li>
 <li><a class="dropdown-item" href="/ensino/horarios-de-aula.php">Horarios de Aula</a></li>
 <li><a class="dropdown-item" href="/ensino/informacoes-uteis.php">Informacoes Uteis</a></li>

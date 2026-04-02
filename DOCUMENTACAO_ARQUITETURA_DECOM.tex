@@ -105,6 +105,8 @@ As tabelas principais implementadas incluem:
 \hline
 \texttt{ppgcc_notices} & Editais e informes especificos da pos-graduacao \\
 \hline
+\texttt{ppgcc_selection_items} & Itens importados da pagina oficial de processo seletivo do PPGCC (agrupados por edital/selecao) \\
+\hline
 \end{longtable}
 
 \section{CSS e padrao visual utilizado}
@@ -135,6 +137,7 @@ Menu principal em \texttt{app/includes/header.php}, com secoes:
     \item Noticias e Eventos
     \item Pessoal
     \item Ensino (incluindo Pos-graduacao em Computacao)
+    \item Processo Seletivo (PPGCC) no menu de Ensino
     \item Graduacao (editavel)
     \item Pos-graduacao (editavel)
     \item Pesquisa
@@ -153,6 +156,7 @@ Painel administrativo com os modulos:
     \item Pessoal
     \item Menu Principal
     \item Pos-graduacao
+    \item Acao de importacao do Processo Seletivo antigo (dentro de Pos-graduacao)
 \end{itemize}
 
 \section{Onde entrar para editar (secretaria)}
@@ -168,6 +172,7 @@ Painel administrativo com os modulos:
     \item Pessoal (docentes/funcionarios): \texttt{/admin/pessoal.php}
     \item Menu principal (Graduacao/Pos-graduacao): \texttt{/admin/menu.php}
     \item Pos-graduacao (conteudo, editais da pos, egressos por ano): \texttt{/admin/pos-graduacao.php}
+    \item Processo Seletivo antigo (importacao): botao \textit{Importar dados agora} em \texttt{/admin/pos-graduacao.php}
 \end{itemize}
 
 \section{Modulo de Pos-graduacao implementado}
@@ -177,6 +182,7 @@ Foi implementado um modulo interno completo no site do DECOM, sem dependencia de
     \item secoes editaveis no admin (ingresso, editais, grade, docencia, bolsas, facilidades para graduacao);
     \item listagem de formandos/egressos com paginacao por ano;
     \item editais/informes da pos com exibicao na propria pagina e na home.
+    \item pagina dedicada de processo seletivo em \texttt{/ensino/pos-processo-seletivo.php}.
 \end{itemize}
 
 \section{Home page dinamica para a Pos}
@@ -187,6 +193,76 @@ A pagina inicial passou a exibir bloco da pos-graduacao com:
     \item link direto para a pagina completa da pos.
 \end{itemize}
 Todo esse conteudo e gerenciavel via painel admin.
+
+\section{Pagina de Processo Seletivo (importacao da base antiga)}
+Foi criada uma pagina especifica para replicar e consolidar o conteudo de:
+\begin{center}
+\texttt{https://www3.decom.ufop.br/pos/processoseletivo/}
+\end{center}
+
+\subsection{Implementacao}
+\begin{itemize}
+    \item pagina publica: \texttt{/ensino/pos-processo-seletivo.php};
+    \item armazenamento estruturado em \texttt{ppgcc\_selection\_items};
+    \item funcao de importacao: \texttt{ppgcc\_import\_selection\_page()} em \texttt{includes/config.php};
+    \item execucao manual via admin para secretaria (botao de importacao).
+\end{itemize}
+
+\subsection{Conteudo importado}
+Sao importados e agrupados por edital/selecao:
+\begin{itemize}
+    \item links de edital;
+    \item formularios de inscricao;
+    \item baremas e planilhas;
+    \item comissoes;
+    \item resultados preliminares e finais;
+    \item anexos relacionados.
+\end{itemize}
+
+\section{Importacao historica de noticias do portal antigo}
+Foi implementada a migracao automatica do acervo antigo:
+\begin{center}
+\texttt{https://www3.decom.ufop.br/decom/noticias/noticias/}
+\end{center}
+
+\subsection{Implementacao}
+\begin{itemize}
+    \item script: \texttt{app/scripts/import\_old\_news.php};
+    \item varredura de paginas do acervo antigo com descoberta de links em \texttt{/acervo/...};
+    \item parse de titulo, resumo, conteudo e data (quando identificavel);
+    \item gravacao idempotente em \texttt{news\_items} (sem duplicacao por URL).
+\end{itemize}
+
+\subsection{Resultado consolidado da ultima importacao}
+\begin{itemize}
+    \item links candidatos identificados: 929;
+    \item noticias inseridas/atualizadas na rodada: 874;
+    \item itens ignorados/falhos: 55;
+    \item total atual em \texttt{news\_items}: 1184 registros.
+\end{itemize}
+
+\subsection{Paginacao por ano (noticias)}
+A pagina \texttt{/noticias/index.php} foi estruturada para:
+\begin{itemize}
+    \item listar anos disponiveis a partir de \texttt{YEAR(published\_at)};
+    \item filtrar noticias por ano (\texttt{?ano=YYYY});
+    \item paginar resultados por pagina (\texttt{?pagina=N}).
+\end{itemize}
+
+\section{Lista resumida de entregas realizadas}
+\begin{itemize}
+    \item correcoes de sessao/login admin e estabilidade de redirecionamento;
+    \item padronizacao de cards para noticias, editais, defesas e estagios/empregos;
+    \item modulo de pessoal com foto, perfil e campos editaveis;
+    \item novos modulos de pesquisa (laboratorios e projetos);
+    \item pagina institucional de Ciencia da Computacao e redirecionamentos solicitados;
+    \item pagina de localizacao com mapa Google e informacoes de campus;
+    \item pagina de mapa do campus com referencias visuais e links oficiais;
+    \item menu principal editavel no admin (graduacao e pos-graduacao);
+    \item modulo completo da pos-graduacao com egressos paginados por ano;
+    \item pagina de processo seletivo da pos importada da base antiga;
+    \item importacao massiva do acervo de noticias antigo para o novo portal.
+\end{itemize}
 
 \section{Racional de desempenho e baixo consumo}
 As decisoes tecnicas priorizam ambiente institucional com recursos modestos:

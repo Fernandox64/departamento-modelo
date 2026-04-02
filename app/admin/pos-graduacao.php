@@ -8,7 +8,6 @@ ensure_ppgcc_tables();
 
 $error = null;
 $success = null;
-$editNotice = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!is_valid_csrf_token($_POST['csrf_token'] ?? null)) {
@@ -26,64 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $success = 'Processo seletivo importado. Itens inseridos: ' . (string)($result['inserted'] ?? 0) . '.';
                 } else {
                     $error = (string)($result['message'] ?? 'Falha na importacao do processo seletivo.');
-                }
-            } elseif ($action === 'save_notice') {
-                $noticeId = (int)($_POST['notice_id'] ?? 0);
-                $title = trim((string)($_POST['notice_title'] ?? ''));
-                $summary = trim((string)($_POST['notice_summary'] ?? ''));
-                $noticeType = (string)($_POST['notice_type'] ?? 'edital');
-                $noticeUrl = trim((string)($_POST['notice_url'] ?? ''));
-                $isActive = isset($_POST['notice_active']) ? 1 : 0;
-                $publishedAt = trim((string)($_POST['notice_published_at'] ?? ''));
-                if ($title === '' || $summary === '') {
-                    $error = 'Titulo e resumo do edital/informe sao obrigatorios.';
-                } else {
-                    if (!in_array($noticeType, ['edital', 'informacao'], true)) {
-                        $noticeType = 'edital';
-                    }
-                    $slug = ppgcc_notice_unique_slug($title, $noticeId > 0 ? $noticeId : null);
-                    $published = $publishedAt !== '' ? str_replace('T', ' ', $publishedAt) . ':00' : date('Y-m-d H:i:s');
-                    if ($noticeId > 0) {
-                        $stmt = db()->prepare(
-                            'UPDATE ppgcc_notices
-                             SET slug = :slug, title = :title, summary = :summary, notice_type = :notice_type,
-                                 notice_url = :notice_url, is_active = :is_active, published_at = :published_at
-                             WHERE id = :id'
-                        );
-                        $stmt->execute([
-                            ':slug' => $slug,
-                            ':title' => $title,
-                            ':summary' => $summary,
-                            ':notice_type' => $noticeType,
-                            ':notice_url' => $noticeUrl !== '' ? $noticeUrl : null,
-                            ':is_active' => $isActive,
-                            ':published_at' => $published,
-                            ':id' => $noticeId,
-                        ]);
-                        $success = 'Item de edital/informe atualizado.';
-                    } else {
-                        $stmt = db()->prepare(
-                            'INSERT INTO ppgcc_notices (slug, title, summary, notice_type, notice_url, is_active, published_at)
-                             VALUES (:slug, :title, :summary, :notice_type, :notice_url, :is_active, :published_at)'
-                        );
-                        $stmt->execute([
-                            ':slug' => $slug,
-                            ':title' => $title,
-                            ':summary' => $summary,
-                            ':notice_type' => $noticeType,
-                            ':notice_url' => $noticeUrl !== '' ? $noticeUrl : null,
-                            ':is_active' => $isActive,
-                            ':published_at' => $published,
-                        ]);
-                        $success = 'Item de edital/informe criado.';
-                    }
-                }
-            } elseif ($action === 'delete_notice') {
-                $id = (int)($_POST['id'] ?? 0);
-                if ($id > 0) {
-                    $stmt = db()->prepare('DELETE FROM ppgcc_notices WHERE id = :id');
-                    $stmt->execute([':id' => $id]);
-                    $success = 'Item de edital/informe removido.';
                 }
             } elseif ($action === 'add_graduate') {
                 $year = (int)($_POST['graduate_year'] ?? 0);
@@ -116,13 +57,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $content = ppgcc_content_get();
-$editNoticeId = isset($_GET['edit_notice']) ? (int)$_GET['edit_notice'] : 0;
-if ($editNoticeId > 0) {
-    $editNotice = ppgcc_notice_find($editNoticeId);
-}
-$notices = ppgcc_notices(50, false);
 $yearStats = ppgcc_graduate_years();
-$selectedYear = isset($_GET['year']) ? (int)$_GET['year'] : 0;
+$selectedYear = isset($_GET['year']) ? (int)($_GET['year']) : 0;
 if ($selectedYear === 0 && !empty($yearStats)) {
     $selectedYear = (int)$yearStats[0]['graduate_year'];
 }
@@ -172,6 +108,8 @@ $graduates = $selectedYear > 0 ? ppgcc_graduates_by_year($selectedYear) : [];
                     <li class="nav-item"><a href="/admin/pessoal.php" class="nav-link"><p>Pessoal</p></a></li>
                     <li class="nav-item"><a href="/admin/menu.php" class="nav-link"><p>Menu Principal</p></a></li>
                     <li class="nav-item"><a href="/admin/pos-graduacao.php" class="nav-link active"><p>Pos-graduacao</p></a></li>
+                    <li class="nav-item"><a href="/admin/pos-publicacoes.php?tipo=noticias" class="nav-link"><p>Noticias/Editais Pos</p></a></li>
+                    <li class="nav-item"><a href="/admin/pos-subsite.php" class="nav-link"><p>Subsite Pos</p></a></li>
                 </ul>
             </nav>
         </div>
@@ -203,6 +141,15 @@ $graduates = $selectedYear > 0 ? ppgcc_graduates_by_year($selectedYear) : [];
             </div>
 
             <div class="card mb-4">
+                <div class="card-header"><h3 class="card-title">Publicacoes da Pos (separadas)</h3></div>
+                <div class="card-body">
+                    <p class="mb-2">Noticias e editais da pos sao gerenciados em modulo separado.</p>
+                    <a class="btn btn-primary btn-sm" href="/admin/pos-publicacoes.php?tipo=noticias">Gerenciar Noticias da Pos</a>
+                    <a class="btn btn-danger btn-sm ms-2" href="/admin/pos-publicacoes.php?tipo=editais">Gerenciar Editais da Pos</a>
+                </div>
+            </div>
+
+            <div class="card mb-4">
                 <div class="card-header"><h3 class="card-title">Processo seletivo (importacao da pagina antiga)</h3></div>
                 <div class="card-body">
                     <p class="mb-2">
@@ -215,82 +162,6 @@ $graduates = $selectedYear > 0 ? ppgcc_graduates_by_year($selectedYear) : [];
                         <button class="btn btn-dark" type="submit">Importar dados agora</button>
                     </form>
                     <a class="btn btn-outline-primary ms-2" target="_blank" rel="noopener" href="/ensino/pos-processo-seletivo.php">Ver pagina publica</a>
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-header"><h3 class="card-title"><?= $editNotice ? 'Editar edital/informe' : 'Novo edital/informe da pos' ?></h3></div>
-                <div class="card-body">
-                    <form method="post">
-                        <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
-                        <input type="hidden" name="action" value="save_notice">
-                        <input type="hidden" name="notice_id" value="<?= e((string)($editNotice['id'] ?? '0')) ?>">
-                        <div class="row g-3">
-                            <div class="col-md-8">
-                                <label class="form-label">Titulo</label>
-                                <input class="form-control" name="notice_title" required value="<?= e((string)($editNotice['title'] ?? '')) ?>">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Tipo</label>
-                                <?php $currentType = (string)($editNotice['notice_type'] ?? 'edital'); ?>
-                                <select class="form-select" name="notice_type">
-                                    <option value="edital"<?= $currentType === 'edital' ? ' selected' : '' ?>>Edital</option>
-                                    <option value="informacao"<?= $currentType === 'informacao' ? ' selected' : '' ?>>Informacao</option>
-                                </select>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">Resumo</label>
-                                <textarea class="form-control" name="notice_summary" rows="2" required><?= e((string)($editNotice['summary'] ?? '')) ?></textarea>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">URL de destino (opcional)</label>
-                                <input class="form-control" name="notice_url" value="<?= e((string)($editNotice['notice_url'] ?? '')) ?>" placeholder="/ensino/pos-graduacao.php ou https://...">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Data de publicacao</label>
-                                <input class="form-control" type="datetime-local" name="notice_published_at" value="<?= e(isset($editNotice['published_at']) ? str_replace(' ', 'T', substr((string)$editNotice['published_at'], 0, 16)) : '') ?>">
-                            </div>
-                            <div class="col-md-2 d-flex align-items-end">
-                                <?php $activeChecked = !isset($editNotice['is_active']) || (int)$editNotice['is_active'] === 1; ?>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" name="notice_active" id="noticeActive"<?= $activeChecked ? ' checked' : '' ?>>
-                                    <label class="form-check-label" for="noticeActive">Ativo</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-flex gap-2 mt-3">
-                            <button class="btn btn-primary" type="submit"><?= $editNotice ? 'Salvar item' : 'Criar item' ?></button>
-                            <?php if ($editNotice): ?><a class="btn btn-outline-secondary" href="/admin/pos-graduacao.php">Cancelar</a><?php endif; ?>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-header"><h3 class="card-title">Editais e informacoes cadastrados</h3></div>
-                <div class="card-body table-responsive">
-                    <table class="table table-sm align-middle">
-                        <thead><tr><th>Titulo</th><th>Tipo</th><th>Publicacao</th><th>Status</th><th class="text-end">Acoes</th></tr></thead>
-                        <tbody>
-                            <?php foreach ($notices as $n): ?>
-                                <tr>
-                                    <td><?= e((string)$n['title']) ?></td>
-                                    <td><?= e((string)$n['notice_type']) ?></td>
-                                    <td><?= e((string)$n['published_at']) ?></td>
-                                    <td><?= (int)$n['is_active'] === 1 ? 'Ativo' : 'Oculto' ?></td>
-                                    <td class="text-end">
-                                        <a class="btn btn-outline-primary btn-sm" href="/admin/pos-graduacao.php?edit_notice=<?= e((string)$n['id']) ?>">Editar</a>
-                                        <form method="post" class="d-inline">
-                                            <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
-                                            <input type="hidden" name="action" value="delete_notice">
-                                            <input type="hidden" name="id" value="<?= e((string)$n['id']) ?>">
-                                            <button class="btn btn-outline-danger btn-sm" type="submit" onclick="return confirm('Excluir este item?');">Excluir</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
                 </div>
             </div>
 

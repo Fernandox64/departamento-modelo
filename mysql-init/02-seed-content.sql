@@ -150,6 +150,18 @@ CREATE TABLE IF NOT EXISTS ppgcc_selection_items (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS ppgcc_pages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    slug VARCHAR(160) NOT NULL UNIQUE,
+    title VARCHAR(220) NOT NULL,
+    summary TEXT NOT NULL,
+    content_html MEDIUMTEXT NOT NULL,
+    source_url VARCHAR(600) DEFAULT NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 DELETE FROM news_items
 WHERE slug IN (
     'portal-em-teste',

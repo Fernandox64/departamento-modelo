@@ -186,6 +186,19 @@ function ensure_ppgcc_tables(): void {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
         );
+        db()->exec(
+            "CREATE TABLE IF NOT EXISTS ppgcc_pages (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                slug VARCHAR(160) NOT NULL UNIQUE,
+                title VARCHAR(220) NOT NULL,
+                summary TEXT NOT NULL,
+                content_html MEDIUMTEXT NOT NULL,
+                source_url VARCHAR(600) DEFAULT NULL,
+                sort_order INT NOT NULL DEFAULT 0,
+                is_active TINYINT(1) NOT NULL DEFAULT 1,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+        );
     } catch (Throwable $e) {
         error_log('Failed ensuring PPGCC tables: ' . $e->getMessage());
     }
@@ -324,6 +337,50 @@ function ppgcc_notices(int $limit = 8, bool $onlyActive = true): array {
         return [];
     }
 }
+function ppgcc_notices_by_type(string $type, int $limit = 20, bool $onlyActive = true, int $offset = 0): array {
+    ensure_ppgcc_tables();
+    if (!in_array($type, ['edital', 'informacao'], true)) {
+        return [];
+    }
+    try {
+        $limit = max(1, min($limit, 100));
+        $offset = max(0, $offset);
+        $sql = 'SELECT id, slug, title, summary, notice_type, notice_url, is_active, published_at
+                FROM ppgcc_notices
+                WHERE notice_type = :type';
+        if ($onlyActive) {
+            $sql .= ' AND is_active = 1';
+        }
+        $sql .= ' ORDER BY published_at DESC, id DESC LIMIT :limit OFFSET :offset';
+        $stmt = db()->prepare($sql);
+        $stmt->bindValue(':type', $type, PDO::PARAM_STR);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll() ?: [];
+    } catch (Throwable $e) {
+        error_log('Failed loading ppgcc notices by type: ' . $e->getMessage());
+        return [];
+    }
+}
+function ppgcc_notices_count_by_type(string $type, bool $onlyActive = true): int {
+    ensure_ppgcc_tables();
+    if (!in_array($type, ['edital', 'informacao'], true)) {
+        return 0;
+    }
+    try {
+        $sql = 'SELECT COUNT(*) FROM ppgcc_notices WHERE notice_type = :type';
+        if ($onlyActive) {
+            $sql .= ' AND is_active = 1';
+        }
+        $stmt = db()->prepare($sql);
+        $stmt->execute([':type' => $type]);
+        return (int)$stmt->fetchColumn();
+    } catch (Throwable $e) {
+        error_log('Failed counting ppgcc notices by type: ' . $e->getMessage());
+        return 0;
+    }
+}
 function ppgcc_notice_find(int $id): ?array {
     ensure_ppgcc_tables();
     $stmt = db()->prepare('SELECT * FROM ppgcc_notices WHERE id = :id');
@@ -352,6 +409,212 @@ function ppgcc_selection_items_grouped(): array {
         error_log('Failed loading selection items: ' . $e->getMessage());
         return [];
     }
+}
+function ppgcc_pages_list(bool $onlyActive = true): array {
+    ensure_ppgcc_tables();
+    try {
+        $sql = 'SELECT id, slug, title, summary, content_html, source_url, sort_order, is_active
+                FROM ppgcc_pages';
+        if ($onlyActive) {
+            $sql .= ' WHERE is_active = 1';
+        }
+        $sql .= ' ORDER BY sort_order ASC, title ASC, id ASC';
+        return db()->query($sql)->fetchAll() ?: [];
+    } catch (Throwable $e) {
+        error_log('Failed loading ppgcc pages: ' . $e->getMessage());
+        return [];
+    }
+}
+function ppgcc_page_by_slug(string $slug): ?array {
+    ensure_ppgcc_tables();
+    try {
+        $stmt = db()->prepare('SELECT * FROM ppgcc_pages WHERE slug = :slug LIMIT 1');
+        $stmt->execute([':slug' => $slug]);
+        $row = $stmt->fetch();
+        return $row ?: null;
+    } catch (Throwable $e) {
+        error_log('Failed loading ppgcc page by slug: ' . $e->getMessage());
+        return null;
+    }
+}
+function ppgcc_page_save(array $data, ?int $id = null): void {
+    ensure_ppgcc_tables();
+    $slug = simple_slugify((string)($data['slug'] ?? $data['title'] ?? 'pagina-pos'));
+    $title = trim((string)($data['title'] ?? 'Pagina da Pos'));
+    $summary = trim((string)($data['summary'] ?? ''));
+    $contentHtml = sanitize_rich_text((string)($data['content_html'] ?? ''));
+    $source = trim((string)($data['source_url'] ?? ''));
+    $sortOrder = (int)($data['sort_order'] ?? 0);
+    $isActive = (int)($data['is_active'] ?? 1) === 1 ? 1 : 0;
+
+    if ($id !== null && $id > 0) {
+        $stmt = db()->prepare(
+            'UPDATE ppgcc_pages
+             SET slug = :slug, title = :title, summary = :summary, content_html = :content_html,
+                 source_url = :source_url, sort_order = :sort_order, is_active = :is_active
+             WHERE id = :id'
+        );
+        $stmt->execute([
+            ':slug' => $slug,
+            ':title' => $title,
+            ':summary' => $summary,
+            ':content_html' => $contentHtml,
+            ':source_url' => $source !== '' ? $source : null,
+            ':sort_order' => $sortOrder,
+            ':is_active' => $isActive,
+            ':id' => $id,
+        ]);
+        return;
+    }
+
+    $stmt = db()->prepare(
+        'INSERT INTO ppgcc_pages (slug, title, summary, content_html, source_url, sort_order, is_active)
+         VALUES (:slug, :title, :summary, :content_html, :source_url, :sort_order, :is_active)
+         ON DUPLICATE KEY UPDATE
+            title = VALUES(title),
+            summary = VALUES(summary),
+            content_html = VALUES(content_html),
+            source_url = VALUES(source_url),
+            sort_order = VALUES(sort_order),
+            is_active = VALUES(is_active)'
+    );
+    $stmt->execute([
+        ':slug' => $slug,
+        ':title' => $title,
+        ':summary' => $summary,
+        ':content_html' => $contentHtml,
+        ':source_url' => $source !== '' ? $source : null,
+        ':sort_order' => $sortOrder,
+        ':is_active' => $isActive,
+    ]);
+}
+function ppgcc_import_subsite_pages(): array {
+    ensure_ppgcc_tables();
+    $startUrl = 'https://www3.decom.ufop.br/pos/inicio/';
+    $ctx = stream_context_create([
+        'http' => ['timeout' => 45, 'header' => "User-Agent: decom-ppgcc-subsite-import/1.0\r\n"],
+        'ssl' => ['verify_peer' => false, 'verify_peer_name' => false],
+    ]);
+    $indexHtml = @file_get_contents($startUrl, false, $ctx);
+    if ($indexHtml === false) {
+        return ['ok' => false, 'imported' => 0, 'message' => 'Falha ao acessar a pagina inicial da pos antiga.'];
+    }
+    $normalize = static function (string $text): string {
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = mb_convert_encoding($text, 'UTF-8', 'UTF-8,ISO-8859-1,Windows-1252');
+        return trim(preg_replace('/\s+/u', ' ', $text) ?? $text);
+    };
+    $dom = new DOMDocument();
+    libxml_use_internal_errors(true);
+    $dom->loadHTML(mb_convert_encoding($indexHtml, 'HTML-ENTITIES', 'UTF-8,ISO-8859-1,Windows-1252'));
+    libxml_clear_errors();
+    $xp = new DOMXPath($dom);
+
+    $urls = ['https://www3.decom.ufop.br/pos/inicio/' => true];
+    foreach ($xp->query('//a[@href]') as $a) {
+        $href = trim((string)$a->getAttribute('href'));
+        if ($href === '' || str_starts_with($href, 'mailto:') || str_starts_with($href, '#')) {
+            continue;
+        }
+        if (str_starts_with($href, '/')) {
+            $href = 'https://www3.decom.ufop.br' . $href;
+        } elseif (!preg_match('~^https?://~i', $href)) {
+            $href = 'https://www3.decom.ufop.br/pos/' . ltrim($href, './');
+        }
+        $u = strtolower($href);
+        if (!str_contains($u, 'www3.decom.ufop.br/pos/')) {
+            continue;
+        }
+        if (str_contains($u, '/login') || str_contains($u, '/mail') || preg_match('/\.(pdf|doc|docx|xls|xlsx)$/i', $u) === 1) {
+            continue;
+        }
+        $urls[$href] = true;
+    }
+
+    $order = 1;
+    $imported = 0;
+    foreach (array_keys($urls) as $url) {
+        $html = @file_get_contents($url, false, $ctx);
+        if ($html === false) {
+            continue;
+        }
+        $d = new DOMDocument();
+        libxml_use_internal_errors(true);
+        $d->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8,ISO-8859-1,Windows-1252'));
+        libxml_clear_errors();
+        $x = new DOMXPath($d);
+
+        $title = '';
+        foreach ($x->query('//h1') as $h1) {
+            $t = $normalize((string)$h1->textContent);
+            if ($t !== '' && mb_strtolower($t, 'UTF-8') !== 'ppgcc' && mb_strtolower($t, 'UTF-8') !== 'menu') {
+                $title = $t;
+                break;
+            }
+        }
+        if ($title === '') {
+            $title = $normalize((string)($x->query('//title')->item(0)?->textContent ?? 'Pagina PPGCC'));
+        }
+
+        $blocks = [];
+        foreach ($x->query('//main//*[self::h2 or self::h3 or self::p or self::li] | //article//*[self::h2 or self::h3 or self::p or self::li]') as $node) {
+            $tag = strtolower((string)$node->nodeName);
+            $txt = $normalize((string)$node->textContent);
+            if ($txt === '' || mb_strlen($txt, 'UTF-8') < 3) {
+                continue;
+            }
+            if (str_contains(mb_strtolower($txt, 'UTF-8'), 'departamento de comput') || str_contains(mb_strtolower($txt, 'UTF-8'), 'universidade federal de ouro preto campus')) {
+                continue;
+            }
+            if ($tag === 'li') {
+                $blocks[] = '<li>' . htmlspecialchars($txt, ENT_QUOTES, 'UTF-8') . '</li>';
+            } elseif ($tag === 'h2' || $tag === 'h3') {
+                $blocks[] = '<h3>' . htmlspecialchars($txt, ENT_QUOTES, 'UTF-8') . '</h3>';
+            } else {
+                $blocks[] = '<p>' . htmlspecialchars($txt, ENT_QUOTES, 'UTF-8') . '</p>';
+            }
+            if (count($blocks) >= 120) {
+                break;
+            }
+        }
+        if (empty($blocks)) {
+            foreach ($x->query('//p') as $p) {
+                $txt = $normalize((string)$p->textContent);
+                if ($txt !== '' && mb_strlen($txt, 'UTF-8') > 10) {
+                    $blocks[] = '<p>' . htmlspecialchars($txt, ENT_QUOTES, 'UTF-8') . '</p>';
+                    if (count($blocks) >= 40) {
+                        break;
+                    }
+                }
+            }
+        }
+        if (empty($blocks)) {
+            continue;
+        }
+
+        $summaryText = strip_tags($blocks[0]);
+        $summary = mb_substr($summaryText, 0, 300, 'UTF-8');
+
+        $path = parse_url($url, PHP_URL_PATH) ?: '/pos/pagina/';
+        $slugRaw = trim(str_replace('/pos/', '', $path), '/');
+        if ($slugRaw === '') {
+            $slugRaw = 'inicio';
+        }
+        $slug = simple_slugify(str_replace('/', '-', $slugRaw));
+
+        ppgcc_page_save([
+            'slug' => $slug,
+            'title' => $title,
+            'summary' => $summary,
+            'content_html' => implode("\n", $blocks),
+            'source_url' => $url,
+            'sort_order' => $order++,
+            'is_active' => 1,
+        ]);
+        $imported++;
+    }
+
+    return ['ok' => true, 'imported' => $imported, 'message' => 'Importacao do subsite concluida.'];
 }
 function ppgcc_import_selection_page(): array {
     ensure_ppgcc_tables();

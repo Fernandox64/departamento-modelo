@@ -90,16 +90,40 @@ page_header('Noticias');
     <?php endif; ?>
 
     <?php if ($totalPages > 1 && $selectedYear > 0): ?>
+        <?php
+            $maxVisiblePages = 10;
+            $windowStart = max(1, $currentPage - intdiv($maxVisiblePages, 2));
+            $windowEnd = min($totalPages, $windowStart + $maxVisiblePages - 1);
+            if (($windowEnd - $windowStart + 1) < $maxVisiblePages) {
+                $windowStart = max(1, $windowEnd - $maxVisiblePages + 1);
+            }
+        ?>
         <nav class="mt-4" aria-label="Paginacao de noticias">
             <ul class="pagination">
                 <li class="page-item<?= $currentPage <= 1 ? ' disabled' : '' ?>">
                     <a class="page-link" href="<?= e(build_news_url($selectedYear, max(1, $currentPage - 1))) ?>">Anterior</a>
                 </li>
-                <?php for ($p = 1; $p <= $totalPages; $p++): ?>
+                <?php if ($windowStart > 1): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="<?= e(build_news_url($selectedYear, 1)) ?>">1</a>
+                    </li>
+                <?php endif; ?>
+                <?php if ($windowStart > 2): ?>
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                <?php endif; ?>
+                <?php for ($p = $windowStart; $p <= $windowEnd; $p++): ?>
                     <li class="page-item<?= $p === $currentPage ? ' active' : '' ?>">
                         <a class="page-link" href="<?= e(build_news_url($selectedYear, $p)) ?>"><?= e((string)$p) ?></a>
                     </li>
                 <?php endfor; ?>
+                <?php if ($windowEnd < $totalPages - 1): ?>
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                <?php endif; ?>
+                <?php if ($windowEnd < $totalPages): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="<?= e(build_news_url($selectedYear, $totalPages)) ?>"><?= e((string)$totalPages) ?></a>
+                    </li>
+                <?php endif; ?>
                 <li class="page-item<?= $currentPage >= $totalPages ? ' disabled' : '' ?>">
                     <a class="page-link" href="<?= e(build_news_url($selectedYear, min($totalPages, $currentPage + 1))) ?>">Proxima</a>
                 </li>

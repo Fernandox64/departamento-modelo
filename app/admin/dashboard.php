@@ -62,6 +62,8 @@ $peopleCount = admin_count_table('people_items');
                     <li class="nav-item"><a href="/admin/pessoal.php" class="nav-link"><p>Pessoal</p></a></li>
                     <li class="nav-item"><a href="/admin/menu.php" class="nav-link"><p>Menu Principal</p></a></li>
                     <li class="nav-item"><a href="/admin/pos-graduacao.php" class="nav-link"><p>Pos-graduacao</p></a></li>
+                    <li class="nav-item"><a href="/admin/pos-publicacoes.php?tipo=noticias" class="nav-link"><p>Noticias/Editais Pos</p></a></li>
+                    <li class="nav-item"><a href="/admin/pos-subsite.php" class="nav-link"><p>Subsite Pos</p></a></li>
                     <li class="nav-item"><a href="/noticias/index.php" class="nav-link" target="_blank" rel="noopener"><p>Ver Noticias</p></a></li>
                     <li class="nav-item"><a href="/noticias/editais.php" class="nav-link" target="_blank" rel="noopener"><p>Ver Editais</p></a></li>
                     <li class="nav-item"><a href="/noticias/defesas.php" class="nav-link" target="_blank" rel="noopener"><p>Ver Defesas</p></a></li>
@@ -147,6 +149,24 @@ $peopleCount = admin_count_table('people_items');
                             <div class="card-body">
                                 <p class="mb-2">Edite secoes da pagina de pos e gerencie egressos por ano.</p>
                                 <a class="btn btn-info text-white" href="/admin/pos-graduacao.php">Gerenciar Pos-graduacao</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card card-danger card-outline">
+                            <div class="card-header"><h3 class="card-title">Publicacoes da Pos</h3></div>
+                            <div class="card-body">
+                                <p class="mb-2">Postagem separada de noticias e editais da pos-graduacao.</p>
+                                <a class="btn btn-danger" href="/admin/pos-publicacoes.php?tipo=noticias">Gerenciar Noticias/Editais da Pos</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card card-dark card-outline">
+                            <div class="card-header"><h3 class="card-title">Subsite Pos</h3></div>
+                            <div class="card-body">
+                                <p class="mb-2">Importe e gerencie paginas institucionais da pos antiga em /pos.</p>
+                                <a class="btn btn-dark" href="/admin/pos-subsite.php">Gerenciar Subsite Pos</a>
                             </div>
                         </div>
                     </div>
