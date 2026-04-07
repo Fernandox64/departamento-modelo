@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS people_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     slug VARCHAR(150) NOT NULL UNIQUE,
     role_type ENUM('docente','funcionario') NOT NULL DEFAULT 'docente',
+    scope ENUM('principal','pos') NOT NULL DEFAULT 'principal',
     name VARCHAR(180) NOT NULL,
     position VARCHAR(255) NOT NULL,
     degree TEXT DEFAULT NULL,
@@ -145,9 +146,13 @@ CREATE TABLE IF NOT EXISTS ppgcc_selection_items (
     group_title VARCHAR(255) NOT NULL,
     item_title VARCHAR(255) NOT NULL,
     item_url VARCHAR(600) NOT NULL,
+    item_type ENUM('informacao','resultado') NOT NULL DEFAULT 'informacao',
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    published_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     item_hash CHAR(64) NOT NULL UNIQUE,
     sort_order INT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS ppgcc_pages (

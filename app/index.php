@@ -109,15 +109,43 @@ page_header('Inicio');
                         <a class="btn btn-outline-secondary btn-sm" href="/ensino/horarios-de-aula.php">Horarios de Aula</a>
                     </div>
                     <?php if ($showStudentCalendar && is_array($studentCalendar)): ?>
-                    <div class="card mt-3 bg-transparent border-light-subtle text-white">
-                        <div class="card-body p-2 p-md-3">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h3 class="h6 mb-0">Calendario oficial UFOP</h3>
-                                <a href="<?= e((string)$studentCalendar['source_url']) ?>" class="btn btn-outline-light btn-sm py-1 px-2" target="_blank" rel="noopener">Abrir PROGRAD</a>
+                    <div class="calendar-01 mt-3">
+                        <div class="calendar-wrap card border-0 shadow-sm">
+                            <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <button type="button" class="btn btn-link p-0 calendar-nav-disabled" aria-label="Mes anterior">
+                                    <i class="bi bi-chevron-left"></i>
+                                </button>
+                                <h3 class="h5 mb-0 calendar-month-title"><?= e((string)$studentCalendar['month_name']) ?> <?= e((string)$studentCalendar['year']) ?></h3>
+                                <button type="button" class="btn btn-link p-0 calendar-nav-disabled" aria-label="Proximo mes">
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
                             </div>
-                            <p class="small mb-2 opacity-75"><?= e((string)($studentCalendar['source_label'] ?? '')) ?> | <?= e((string)$studentCalendar['month_name']) ?> <?= e((string)$studentCalendar['year']) ?></p>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small text-muted"><?= e((string)($studentCalendar['source_label'] ?? '')) ?></span>
+                                <a href="<?= e((string)$studentCalendar['source_url']) ?>" class="btn btn-outline-secondary btn-sm py-1 px-2" target="_blank" rel="noopener">Abrir PROGRAD</a>
+                            </div>
+                            <?php
+                            $calendarDayMap = (array)($studentCalendar['days'] ?? []);
+                            $calendarDaysInMonth = (int)($studentCalendar['days_in_month'] ?? 0);
+                            $selectedCalendarDay = 0;
+                            $todayDay = ((int)date('Y') === (int)$studentCalendar['year'] && (int)date('n') === (int)$studentCalendar['month']) ? (int)date('j') : 0;
+                            if ($todayDay > 0) {
+                                $selectedCalendarDay = $todayDay;
+                            } else {
+                                for ($dd = 1; $dd <= $calendarDaysInMonth; $dd++) {
+                                    if (!empty($calendarDayMap[$dd])) {
+                                        $selectedCalendarDay = $dd;
+                                        break;
+                                    }
+                                }
+                                if ($selectedCalendarDay === 0) {
+                                    $selectedCalendarDay = $todayDay > 0 ? $todayDay : 1;
+                                }
+                            }
+                            ?>
                             <div class="table-responsive">
-                                <table class="table table-sm table-bordered align-middle text-center mb-2 student-calendar-bs">
+                                <table class="table table-sm table-bordered align-middle text-center mb-3 student-calendar-bs">
                                     <thead>
                                         <tr>
                                             <?php foreach ($studentCalendar['weekdays'] as $w): ?>
@@ -150,7 +178,19 @@ page_header('Inicio');
                                                             }
                                                         }
                                                         ?>
-                                                        <td class="<?= $hasHoliday ? 'student-day-holiday' : '' ?> <?= $hasEvent ? 'student-day-event' : '' ?>"><span><?= e((string)$day) ?></span></td>
+                                                        <td class="<?= $hasHoliday ? 'student-day-holiday' : '' ?> <?= $hasEvent ? 'student-day-event' : '' ?> <?= $day === $todayDay ? 'student-day-today' : '' ?>">
+                                                            <button type="button"
+                                                                class="btn btn-link btn-sm p-0 text-decoration-none student-day-btn <?= $day === $selectedCalendarDay ? 'is-selected' : '' ?>"
+                                                                data-calendar-day="<?= e((string)$day) ?>">
+                                                                <span><?= e((string)$day) ?></span>
+                                                            </button>
+                                                            <?php if ($hasHoliday || $hasEvent): ?>
+                                                                <span class="student-day-markers">
+                                                                    <?php if ($hasHoliday): ?><i class="marker-holiday"></i><?php endif; ?>
+                                                                    <?php if ($hasEvent): ?><i class="marker-event"></i><?php endif; ?>
+                                                                </span>
+                                                            <?php endif; ?>
+                                                        </td>
                                                         <?php $day++; ?>
                                                     <?php endif; ?>
                                                 <?php endfor; ?>
@@ -163,33 +203,28 @@ page_header('Inicio');
                                 <span class="badge text-bg-danger">Feriado</span>
                                 <span class="badge text-bg-warning">Evento</span>
                             </div>
-                            <ul class="list-group list-group-flush small student-calendar-feed">
+                            <div class="small fw-semibold mb-1 text-secondary">Detalhes do dia <span id="calendar-selected-day-label"><?= e((string)$selectedCalendarDay) ?></span></div>
+                            <ul class="list-group list-group-flush small student-calendar-feed mb-0" id="calendar-selected-day-list">
                                 <?php
-                                $printed = 0;
-                                for ($d = 1; $d <= (int)$studentCalendar['days_in_month']; $d++) {
-                                    foreach ((array)($studentCalendar['days'][$d] ?? []) as $it) {
-                                        if ($printed >= 4) {
-                                            break 2;
-                                        }
+                                $selectedItems = (array)($calendarDayMap[$selectedCalendarDay] ?? []);
+                                if (empty($selectedItems)):
                                 ?>
-                                    <li class="list-group-item px-0 py-1 bg-transparent text-white border-light-subtle">
-                                        <strong><?= e((string)$d) ?>:</strong>
-                                        <?php if (((string)($it['type'] ?? '')) === 'holiday'): ?>
-                                            <span class="badge text-bg-danger">Feriado</span>
-                                        <?php else: ?>
-                                            <span class="badge text-bg-warning">Evento do departamento</span>
-                                        <?php endif; ?>
-                                        <?= e((string)($it['title'] ?? '')) ?>
-                                    </li>
-                                <?php
-                                        $printed++;
-                                    }
-                                }
-                                if ($printed === 0):
-                                ?>
-                                    <li class="list-group-item px-0 py-1 bg-transparent text-white border-light-subtle">Sem eventos/feriados publicados para este mes.</li>
+                                    <li class="list-group-item px-0 py-1 bg-transparent border-light">Sem eventos/feriados neste dia.</li>
+                                <?php else: ?>
+                                    <?php foreach ($selectedItems as $it): ?>
+                                        <li class="list-group-item px-0 py-1 bg-transparent border-light">
+                                            <?php if (((string)($it['type'] ?? '')) === 'holiday'): ?>
+                                                <span class="badge text-bg-danger">Feriado</span>
+                                            <?php else: ?>
+                                                <span class="badge text-bg-warning">Evento do departamento</span>
+                                            <?php endif; ?>
+                                            <?= e((string)($it['title'] ?? '')) ?>
+                                        </li>
+                                    <?php endforeach; ?>
                                 <?php endif; ?>
                             </ul>
+                            <script type="application/json" id="calendar-day-data"><?= e((string)json_encode($calendarDayMap, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) ?></script>
+                            </div>
                         </div>
                     </div>
                     <?php endif; ?>
@@ -241,4 +276,59 @@ page_header('Inicio');
         </div>
     </div>
 </div>
+<?php if ($showStudentCalendar && is_array($studentCalendar)): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var dataEl = document.getElementById('calendar-day-data');
+    var dayLabel = document.getElementById('calendar-selected-day-label');
+    var list = document.getElementById('calendar-selected-day-list');
+    if (!dataEl || !dayLabel || !list) {
+        return;
+    }
+    var map = {};
+    try {
+        map = JSON.parse(dataEl.textContent || '{}') || {};
+    } catch (e) {
+        map = {};
+    }
+    function renderDay(day) {
+        dayLabel.textContent = String(day);
+        var items = map[String(day)] || map[day] || [];
+        list.innerHTML = '';
+        if (!Array.isArray(items) || items.length === 0) {
+            var liEmpty = document.createElement('li');
+            liEmpty.className = 'list-group-item px-0 py-1 bg-transparent border-light';
+            liEmpty.textContent = 'Sem eventos/feriados neste dia.';
+            list.appendChild(liEmpty);
+            return;
+        }
+        items.forEach(function (it) {
+            var li = document.createElement('li');
+            li.className = 'list-group-item px-0 py-1 bg-transparent border-light';
+            var badge = document.createElement('span');
+            if ((it.type || '') === 'holiday') {
+                badge.className = 'badge text-bg-danger';
+                badge.textContent = 'Feriado';
+            } else {
+                badge.className = 'badge text-bg-warning';
+                badge.textContent = 'Evento do departamento';
+            }
+            li.appendChild(badge);
+            li.appendChild(document.createTextNode(' ' + (it.title || '')));
+            list.appendChild(li);
+        });
+    }
+    document.querySelectorAll('.student-day-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.student-day-btn.is-selected').forEach(function (b) {
+                b.classList.remove('is-selected');
+            });
+            btn.classList.add('is-selected');
+            var day = parseInt(btn.getAttribute('data-calendar-day') || '1', 10);
+            renderDay(day);
+        });
+    });
+});
+</script>
+<?php endif; ?>
 <?php page_footer(); ?>

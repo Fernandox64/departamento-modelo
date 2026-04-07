@@ -92,6 +92,10 @@ if ($topbarEmail === '') {
                         <li><a class="dropdown-item" href="/pos/noticias.php">Noticias da Pos</a></li>
                         <li><a class="dropdown-item" href="/pos/editais.php">Editais da Pos</a></li>
                         <li><a class="dropdown-item" href="/pos/processo-seletivo.php">Processo Seletivo</a></li>
+                        <li><a class="dropdown-item" href="/pos/pesquisa.php">Pesquisa da Pos</a></li>
+                        <li><a class="dropdown-item" href="/pos/extensao.php">Extensao da Pos</a></li>
+                        <li><a class="dropdown-item" href="/pos/docentes.php">Docentes da Pos</a></li>
+                        <li><a class="dropdown-item" href="/pos/atendimento-docentes.php">Atendimento da Pos</a></li>
                         <li><a class="dropdown-item" href="/ensino/inteligencia-artificial.php">Curso de Graduacao 2</a></li>
                         <li><a class="dropdown-item" href="/ensino/horarios-de-aula.php">Horarios de Aula</a></li>
                         <li><a class="dropdown-item" href="/ensino/informacoes-uteis.php">Informacoes Uteis</a></li>

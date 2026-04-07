@@ -98,53 +98,13 @@ $pages = ppgcc_pages_list(false);
             </ul>
         </div>
     </nav>
-
-    <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
-        <div class="sidebar-brand">
-            <a href="/admin/dashboard.php" class="brand-link text-decoration-none"><span class="brand-text fw-light">Portal Admin</span></a>
-        </div>
-        <div class="sidebar-wrapper">
-            <nav class="mt-2">
-                <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu">
-                    <li class="nav-item"><a href="/admin/dashboard.php" class="nav-link"><p>Dashboard</p></a></li>
-                    <li class="nav-item"><a href="/admin/content.php?type=noticias" class="nav-link"><p>Noticias</p></a></li>
-                    <li class="nav-item"><a href="/admin/content.php?type=editais" class="nav-link"><p>Editais</p></a></li>
-                    <li class="nav-item"><a href="/admin/content.php?type=defesas" class="nav-link"><p>Defesas</p></a></li>
-                    <li class="nav-item"><a href="/admin/content.php?type=estagios" class="nav-link"><p>Estagios e Empregos</p></a></li>
-                    <li class="nav-item"><a href="/admin/pessoal.php" class="nav-link"><p>Pessoal</p></a></li>
-                    <li class="nav-item"><a href="/admin/atendimento-docentes.php" class="nav-link"><p>Atendimento Docentes</p></a></li>
-                    <li class="nav-item"><a href="/admin/menu.php" class="nav-link"><p>Menu Principal</p></a></li>
-                    <li class="nav-item"><a href="/admin/tema.php" class="nav-link"><p>Tema e Cores</p></a></li>
-                    <li class="nav-item"><a href="/admin/carousel.php" class="nav-link"><p>Carrossel Home</p></a></li>
-                    <li class="nav-item"><a href="/admin/horarios.php" class="nav-link"><p>Horarios de Aula</p></a></li>
-                    <li class="nav-item"><a href="/admin/pos-graduacao.php" class="nav-link"><p>Pos-graduacao</p></a></li>
-                    <li class="nav-item"><a href="/admin/pos-publicacoes.php?tipo=noticias" class="nav-link"><p>Noticias/Editais Pos</p></a></li>
-                    <li class="nav-item"><a href="/admin/pos-subsite.php" class="nav-link active"><p>Subsite Pos</p></a></li>
-                    <?php if (admin_can('manage_users')): ?><li class="nav-item"><a href="/admin/users.php" class="nav-link"><p>Usuarios e Permissoes</p></a></li><?php endif; ?>
-                    <li class="nav-item"><a href="/health.php" class="nav-link" target="_blank" rel="noopener"><p>Health</p></a></li>
-                </ul>
-            </nav>
-        </div>
-    </aside>
+    <?php render_admin_sidebar('pos_subsite'); ?>
 
     <main class="app-main">
         <div class="app-content-header"><div class="container-fluid"><h3 class="mb-0">Gerenciar Subsite da Pos</h3></div></div>
         <div class="app-content"><div class="container-fluid">
             <?php if ($error): ?><div class="alert alert-danger"><?= e($error) ?></div><?php endif; ?>
             <?php if ($success): ?><div class="alert alert-success"><?= e($success) ?></div><?php endif; ?>
-
-            <div class="card mb-4">
-                <div class="card-header"><h3 class="card-title">Importacao do site antigo da Pos</h3></div>
-                <div class="card-body">
-                    <p class="mb-2">Importa paginas institucionais de <code>https://www3.decom.ufop.br/pos/inicio/</code> para o subsite interno <code>/pos/inicio.php</code>.</p>
-                    <form method="post" class="d-inline">
-                        <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
-                        <input type="hidden" name="action" value="import">
-                        <button class="btn btn-dark" type="submit">Importar subsite agora</button>
-                    </form>
-                    <a class="btn btn-outline-primary ms-2" href="/pos/inicio.php" target="_blank" rel="noopener">Ver subsite publico</a>
-                </div>
-            </div>
 
             <div class="card mb-4">
                 <div class="card-header"><h3 class="card-title"><?= $editing ? 'Editar pagina' : 'Nova pagina do subsite' ?></h3></div>
