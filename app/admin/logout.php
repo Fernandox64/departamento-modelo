@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 declare(strict_types=1);
 
 require_once __DIR__ . '/../includes/config.php';
@@ -10,3 +10,4 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !is_valid_csrf_token($_POST['csrf_t
 
 admin_logout();
 redirect('/admin/login.php');
+

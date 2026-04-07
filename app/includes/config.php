@@ -34,12 +34,12 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
-const SITE_NAME = 'Departamento de Computação';
-const SITE_SIGLA = 'DECOM';
-const SITE_UNIVERSITY = 'Universidade Federal de Ouro Preto';
-const SITE_EMAIL = 'decom@ufop.edu.br';
-const SITE_PHONE = '+55 31 3559-1692';
-const SITE_ADDRESS = 'Campus Morro do Cruzeiro, Ouro Preto - MG';
+const SITE_NAME = 'Departamento Modelo';
+const SITE_SIGLA = 'DEP';
+const SITE_UNIVERSITY = 'Universidade Modelo';
+const SITE_EMAIL = 'departamento@instituicao.br';
+const SITE_PHONE = '+55 00 0000-0000';
+const SITE_ADDRESS = 'Endereco institucional do departamento';
 
 const ADMIN_MAX_LOGIN_ATTEMPTS = 5;
 const ADMIN_LOCKOUT_SECONDS = 900;
@@ -127,60 +127,265 @@ function site_setting_set(string $key, string $value): void {
     );
     $stmt->execute([':k' => $key, ':v' => $value]);
 }
-function hero_carousel_defaults(): array {
+function site_color_palettes(): array {
     return [
-        [
-            'image' => '/assets/images/carousel/decom-campus.png',
-            'badge' => 'Departamento de Computacao',
-            'title' => 'Portal Institucional do DECOM/UFOP',
-            'text' => 'Comunicacao academica e administrativa com noticias, editais, defesas e servicos para alunos.',
+        'azul-institucional' => [
+            'name' => 'Azul Institucional',
+            'description' => 'Paleta padrao com tons de azul e destaque amarelo.',
+            'vars' => ['yellow' => '#FFDE42', 'cyan' => '#53CBF3', 'blue' => '#5478FF', 'navy' => '#111FA2', 'bg' => '#F8FBFF', 'text' => '#0F1A5F'],
         ],
-        [
-            'image' => '/assets/images/carousel/ufop-campus-map.png',
-            'badge' => 'Ensino e Estrutura',
-            'title' => 'Informacoes de cursos, horarios e atendimento',
-            'text' => 'Acesso rapido para graduacao, pos, monografias e servicos ao estudante.',
+        'ufop' => [
+            'name' => 'UFOP Classica',
+            'description' => 'Paleta vinho e cinza inspirada no portal e na logomarca institucional da UFOP.',
+            'vars' => ['yellow' => '#B08D57', 'cyan' => '#B3BAC3', 'blue' => '#8C1D40', 'navy' => '#5C132B', 'bg' => '#F7F7F8', 'text' => '#2B2F33'],
         ],
-        [
-            'image' => '/assets/images/carousel/tech-circuit.jpg',
-            'badge' => 'Pesquisa e Inovacao',
-            'title' => 'Tecnologia, ciencia de dados e inteligencia artificial',
-            'text' => 'Projetos, laboratorios e iniciativas do DECOM para formacao e impacto social.',
+        'verde-campus' => [
+            'name' => 'Verde Campus',
+            'description' => 'Tons de verde para visual natural e academico.',
+            'vars' => ['yellow' => '#B7E07A', 'cyan' => '#63D5B3', 'blue' => '#2F9E44', 'navy' => '#1F6B2B', 'bg' => '#F4FBF6', 'text' => '#183A1D'],
+        ],
+        'oceano-profundo' => [
+            'name' => 'Oceano Profundo',
+            'description' => 'Azul petroleo com contraste moderno.',
+            'vars' => ['yellow' => '#F6C453', 'cyan' => '#4FD1C5', 'blue' => '#0EA5E9', 'navy' => '#0B3C5D', 'bg' => '#F1F8FC', 'text' => '#0B2239'],
+        ],
+        'por-do-sol' => [
+            'name' => 'Por do Sol',
+            'description' => 'Mistura de laranja, coral e azul noturno.',
+            'vars' => ['yellow' => '#FFC857', 'cyan' => '#FF9B85', 'blue' => '#E76F51', 'navy' => '#264653', 'bg' => '#FFF8F3', 'text' => '#3A2D2A'],
+        ],
+        'grafite' => [
+            'name' => 'Grafite',
+            'description' => 'Neutra e sofisticada, com destaque dourado.',
+            'vars' => ['yellow' => '#D4AF37', 'cyan' => '#9CA3AF', 'blue' => '#4B5563', 'navy' => '#1F2937', 'bg' => '#F7F7F8', 'text' => '#111827'],
+        ],
+        'vinho-academico' => [
+            'name' => 'Vinho Academico',
+            'description' => 'Tons de vinho com apoio quente.',
+            'vars' => ['yellow' => '#F3C677', 'cyan' => '#E7A4B3', 'blue' => '#9F2B68', 'navy' => '#5C1A3A', 'bg' => '#FFF7FA', 'text' => '#3F1328'],
+        ],
+        'lavanda-tech' => [
+            'name' => 'Lavanda Tech',
+            'description' => 'Visual leve com violeta e azul claro.',
+            'vars' => ['yellow' => '#F7D154', 'cyan' => '#A5B4FC', 'blue' => '#7C3AED', 'navy' => '#312E81', 'bg' => '#F7F5FF', 'text' => '#221B4B'],
+        ],
+        'turquesa-energia' => [
+            'name' => 'Turquesa Energia',
+            'description' => 'Paleta vibrante para portais dinamicos.',
+            'vars' => ['yellow' => '#FDE047', 'cyan' => '#2DD4BF', 'blue' => '#14B8A6', 'navy' => '#0F766E', 'bg' => '#F0FDFA', 'text' => '#134E4A'],
+        ],
+        'terra-cobre' => [
+            'name' => 'Terra Cobre',
+            'description' => 'Paleta terrosa com boa legibilidade.',
+            'vars' => ['yellow' => '#E9C46A', 'cyan' => '#D9A066', 'blue' => '#B5651D', 'navy' => '#6D3B1F', 'bg' => '#FCF7F2', 'text' => '#3E2723'],
+        ],
+        'vermelho-grafite' => [
+            'name' => 'Vermelho Grafite',
+            'description' => 'Variacao em tons de vermelho, cinza e preto para visual forte e moderno.',
+            'vars' => ['yellow' => '#C9A66B', 'cyan' => '#A9ADB3', 'blue' => '#B91C1C', 'navy' => '#111111', 'bg' => '#F2F3F5', 'text' => '#1A1A1A'],
+        ],
+        'petroleo-verde' => [
+            'name' => 'Petroleo Verde',
+            'description' => 'Inspirada na paleta azul e verde da referencia enviada.',
+            'vars' => ['yellow' => '#93C95F', 'cyan' => '#199C9B', 'blue' => '#115A73', 'navy' => '#070048', 'bg' => '#F2F7F8', 'text' => '#0C2530'],
+        ],
+        'areia-terracota' => [
+            'name' => 'Areia Terracota',
+            'description' => 'Inspirada na paleta terrosa clara da referencia enviada.',
+            'vars' => ['yellow' => '#E5D89B', 'cyan' => '#D4CB7F', 'blue' => '#D8AE62', 'navy' => '#745A28', 'bg' => '#FAF6E8', 'text' => '#3C2F1A'],
+        ],
+        'oliva-terra' => [
+            'name' => 'Oliva Terra',
+            'description' => 'Inspirada na paleta oliva, cobre e grafite da referencia enviada.',
+            'vars' => ['yellow' => '#B89658', 'cyan' => '#6F724B', 'blue' => '#A6472D', 'navy' => '#3A4F3B', 'bg' => '#F4F2EC', 'text' => '#2A2924'],
+        ],
+        'ufop-institucional-classica' => [
+            'name' => 'UFOP Institucional Classica',
+            'description' => 'Paleta institucional equilibrada para comunicacao formal.',
+            'vars' => ['yellow' => '#FFFFFF', 'cyan' => '#6E6E6E', 'blue' => '#B5121B', 'navy' => '#8F0F16', 'bg' => '#F5F5F5', 'text' => '#2B2B2B'],
+        ],
+        'vermelho-intensificado' => [
+            'name' => 'Vermelho Intensificado',
+            'description' => 'Variacao moderna com alto contraste para destaques visuais.',
+            'vars' => ['yellow' => '#FFFFFF', 'cyan' => '#8A8A8A', 'blue' => '#D71920', 'navy' => '#A10E14', 'bg' => '#EFEFEF', 'text' => '#1A1A1A'],
+        ],
+        'vermelho-premium' => [
+            'name' => 'Vermelho Premium',
+            'description' => 'Visual sofisticado para departamento com pesquisa e tecnologia.',
+            'vars' => ['yellow' => '#E8E8E8', 'cyan' => '#9E0B0F', 'blue' => '#C4171D', 'navy' => '#1E3A5F', 'bg' => '#FFFFFF', 'text' => '#333333'],
         ],
     ];
 }
+function hex_to_rgb_css(string $hex): string {
+    $hex = trim($hex);
+    if (!preg_match('/^#([a-f0-9]{3}|[a-f0-9]{6})$/i', $hex)) {
+        return 'rgb(0, 0, 0)';
+    }
+    $raw = substr($hex, 1);
+    if (strlen($raw) === 3) {
+        $raw = $raw[0] . $raw[0] . $raw[1] . $raw[1] . $raw[2] . $raw[2];
+    }
+    $r = hexdec(substr($raw, 0, 2));
+    $g = hexdec(substr($raw, 2, 2));
+    $b = hexdec(substr($raw, 4, 2));
+    return "rgb({$r}, {$g}, {$b})";
+}
+function current_site_palette_key(): string {
+    $palettes = site_color_palettes();
+    $saved = trim(site_setting_get('site_palette', 'azul-institucional'));
+    return array_key_exists($saved, $palettes) ? $saved : 'azul-institucional';
+}
+function current_site_palette(): array {
+    $palettes = site_color_palettes();
+    return $palettes[current_site_palette_key()];
+}
+function set_current_site_palette(string $key): bool {
+    $palettes = site_color_palettes();
+    if (!array_key_exists($key, $palettes)) {
+        return false;
+    }
+    site_setting_set('site_palette', $key);
+    return true;
+}
+function current_site_palette_inline_css(): string {
+    $palette = current_site_palette();
+    $vars = $palette['vars'] ?? [];
+    $yellow = (string)($vars['yellow'] ?? '#FFDE42');
+    $cyan = (string)($vars['cyan'] ?? '#53CBF3');
+    $blue = (string)($vars['blue'] ?? '#5478FF');
+    $navy = (string)($vars['navy'] ?? '#111FA2');
+    $bg = (string)($vars['bg'] ?? '#F8FBFF');
+    $text = (string)($vars['text'] ?? '#0F1A5F');
+    return ':root{'
+        . '--decom-yellow:' . $yellow . ';'
+        . '--decom-cyan:' . $cyan . ';'
+        . '--decom-blue:' . $blue . ';'
+        . '--decom-navy:' . $navy . ';'
+        . '--decom-yellow-rgb:' . hex_to_rgb_css($yellow) . ';'
+        . '--decom-cyan-rgb:' . hex_to_rgb_css($cyan) . ';'
+        . '--decom-blue-rgb:' . hex_to_rgb_css($blue) . ';'
+        . '--decom-navy-rgb:' . hex_to_rgb_css($navy) . ';'
+        . '--decom-bg:' . $bg . ';'
+        . '--decom-text:' . $text . ';'
+        . '}';
+}
+function normalize_optional_logo_url(string $url): string {
+    $url = trim($url);
+    if ($url === '') {
+        return '';
+    }
+    if (preg_match('~^https?://~i', $url) === 1 || str_starts_with($url, '/')) {
+        return $url;
+    }
+    return '/' . ltrim($url, '/');
+}
+function header_ufop_logo_url(): string {
+    return 'https://www.ufop.br/sites/default/files/logo_ufop.png';
+}
+function header_department_logo(): array {
+    $url = normalize_optional_logo_url(site_setting_get('header_department_logo_url', ''));
+    $link = normalize_menu_url(site_setting_get('header_department_logo_link', '/'), '/');
+    $alt = trim(site_setting_get('header_department_logo_alt', SITE_NAME . ' - logo'));
+    return [
+        'url' => $url,
+        'link' => $link,
+        'alt' => $alt !== '' ? $alt : (SITE_NAME . ' - logo'),
+    ];
+}
+function hero_carousel_defaults(): array {
+    return [
+        [
+            'id' => 'default-1',
+            'image' => '/assets/images/carousel/lab-1.png',
+            'badge' => 'Portal Institucional',
+            'title' => 'Bem-vindo ao portal do departamento',
+            'text' => 'Noticias, editais, comunicados e servicos academicos em um unico lugar.',
+        ],
+    ];
+}
+function hero_slide_normalize(array $slide, string $fallbackId): array {
+    $id = trim((string)($slide['id'] ?? ''));
+    if ($id === '') {
+        $id = $fallbackId;
+    }
+    $image = trim((string)($slide['image'] ?? ''));
+    if ($image === '' || $image === '/assets/images/carousel/tech-circuit.jpg') {
+        $image = '/assets/images/carousel/lab-1.png';
+    }
+    return [
+        'id' => $id,
+        'image' => $image,
+        'badge' => trim((string)($slide['badge'] ?? '')),
+        'title' => trim((string)($slide['title'] ?? '')),
+        'text' => trim((string)($slide['text'] ?? '')),
+    ];
+}
 function hero_carousel_get(): array {
-    $defaults = hero_carousel_defaults();
-    $slides = [];
+    $json = trim(site_setting_get('hero_carousel_json', ''));
+    if ($json !== '') {
+        $decoded = json_decode($json, true);
+        if (is_array($decoded) && !empty($decoded)) {
+            $out = [];
+            $idx = 1;
+            foreach ($decoded as $slide) {
+                if (!is_array($slide)) {
+                    continue;
+                }
+                $out[] = hero_slide_normalize($slide, 'slide-' . $idx);
+                $idx++;
+            }
+            if (!empty($out)) {
+                return $out;
+            }
+        }
+    }
+
+    // Compatibilidade com estrutura antiga (3 slides em keys separadas).
+    $legacy = [];
     for ($i = 1; $i <= 3; $i++) {
-        $d = $defaults[$i - 1];
-        $slides[] = [
-            'image' => trim(site_setting_get("hero_slide_{$i}_image", $d['image'])),
-            'badge' => trim(site_setting_get("hero_slide_{$i}_badge", $d['badge'])),
-            'title' => trim(site_setting_get("hero_slide_{$i}_title", $d['title'])),
-            'text' => trim(site_setting_get("hero_slide_{$i}_text", $d['text'])),
+        $image = trim(site_setting_get("hero_slide_{$i}_image", ''));
+        $badge = trim(site_setting_get("hero_slide_{$i}_badge", ''));
+        $title = trim(site_setting_get("hero_slide_{$i}_title", ''));
+        $text = trim(site_setting_get("hero_slide_{$i}_text", ''));
+        if ($image === '' && $badge === '' && $title === '' && $text === '') {
+            continue;
+        }
+        $legacy[] = [
+            'id' => 'legacy-' . $i,
+            'image' => $image,
+            'badge' => $badge,
+            'title' => $title,
+            'text' => $text,
         ];
     }
-    return $slides;
+    if (!empty($legacy)) {
+        return $legacy;
+    }
+
+    return hero_carousel_defaults();
 }
 function hero_carousel_save(array $slides): void {
-    $defaults = hero_carousel_defaults();
-    for ($i = 1; $i <= 3; $i++) {
-        $input = $slides[$i - 1] ?? [];
-        $d = $defaults[$i - 1];
-        $image = trim((string)($input['image'] ?? $d['image']));
-        $badge = trim((string)($input['badge'] ?? $d['badge']));
-        $title = trim((string)($input['title'] ?? $d['title']));
-        $text = trim((string)($input['text'] ?? $d['text']));
-        site_setting_set("hero_slide_{$i}_image", $image !== '' ? $image : $d['image']);
-        site_setting_set("hero_slide_{$i}_badge", $badge !== '' ? $badge : $d['badge']);
-        site_setting_set("hero_slide_{$i}_title", $title !== '' ? $title : $d['title']);
-        site_setting_set("hero_slide_{$i}_text", $text !== '' ? $text : $d['text']);
+    $normalized = [];
+    $idx = 1;
+    foreach ($slides as $slide) {
+        if (!is_array($slide)) {
+            continue;
+        }
+        $n = hero_slide_normalize($slide, 'slide-' . $idx);
+        if ($n['image'] === '' && $n['title'] === '' && $n['text'] === '' && $n['badge'] === '') {
+            continue;
+        }
+        $normalized[] = $n;
+        $idx++;
     }
+    if (empty($normalized)) {
+        $normalized = hero_carousel_defaults();
+    }
+    site_setting_set('hero_carousel_json', json_encode($normalized, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 }
 function horarios_cc_2026_template_html(): string {
     return <<<'HTML'
-<h2>Horarios de Aula - Bacharelado em Ciencia da Computacao (2026-1)</h2>
+<h2>Horarios de Aula - Curso de Graduacao (2026-1)</h2>
 <p><strong>Acesso Rapido:</strong> 1o, 2o, 3o, 4o, 5o, 6o, 7o, 8o periodo e Eletivas.</p>
 
 <h3>1o Periodo</h3>
@@ -199,7 +404,7 @@ function horarios_cc_2026_template_html(): string {
 </tbody>
 </table>
 </div>
-<p><small>BCC109 - Eletronica para Computacao | BCC201 - Introducao a Programacao | BCC265 - Eletronica para Computacao | BCC501 - Introducao a Ciencia da Computacao | MTM122 - Calculo Diferencial e Integral I | MTM131 - Geometria Analitica e Calculo Vetorial</small></p>
+<p><small>BCC109 - Eletronica para Computacao | BCC201 - Introducao a Programacao | BCC265 - Eletronica para Computacao | BCC501 - Introducao a Curso de Graduacao | MTM122 - Calculo Diferencial e Integral I | MTM131 - Geometria Analitica e Calculo Vetorial</small></p>
 
 <h3>2o Periodo</h3>
 <div class="table-responsive">
@@ -271,7 +476,7 @@ function horarios_cc_2026_template_html(): string {
 </tbody>
 </table>
 </div>
-<p><small>BCC241 - Projeto e Analise de Algoritmos | BCC244 - Teoria da Computacao | BCC321 - Banco de Dados I | BCC323 - Engenharia de Software II | BCC362 - Sistemas Distribuidos | BCC502 - Metodologia Cientifica em Ciencia da Computacao</small></p>
+<p><small>BCC241 - Projeto e Analise de Algoritmos | BCC244 - Teoria da Computacao | BCC321 - Banco de Dados I | BCC323 - Engenharia de Software II | BCC362 - Sistemas Distribuidos | BCC502 - Metodologia Cientifica em Curso de Graduacao</small></p>
 
 <h3>6o Periodo</h3>
 <div class="table-responsive">
@@ -289,7 +494,7 @@ function horarios_cc_2026_template_html(): string {
 </tbody>
 </table>
 </div>
-<p><small>BCC325 - Inteligencia Artificial | BCC326 - Processamento de Imagens | BCC327 - Computacao Grafica | BCC328 - Construcao de Compiladores I | BCC342 - Introducao a Otimizacao</small></p>
+<p><small>BCC325 - Curso de Graduacao 2 | BCC326 - Processamento de Imagens | BCC327 - Computacao Grafica | BCC328 - Construcao de Compiladores I | BCC342 - Introducao a Otimizacao</small></p>
 
 <h3>7o Periodo</h3>
 <div class="table-responsive">
@@ -355,7 +560,7 @@ function horarios_cc_2026_outras_eletivas_html(): string {
 <li>BCC242 - Linguagens Formais e Automatos</li>
 <li>BCC243 - Computabilidade</li>
 <li>BCC261 - Sistemas de Computacao</li>
-<li>BCC401 - Metodologia de Pesquisa em Ciencia da Computacao</li>
+<li>BCC401 - Metodologia de Pesquisa em Curso de Graduacao</li>
 <li>BCC403 - Interface de Usuario Avancada para Wearable Computing</li>
 <li>BCC405 - Otimizacao Nao Linear</li>
 <li>BCC406 - Redes Neurais e Aprendizagem em Profundidade</li>
@@ -393,8 +598,8 @@ function horarios_cc_2026_outras_eletivas_html(): string {
 <li>BCC901 - Tecnologias Inovadoras II</li>
 <li>BCC902 - Tecnologias Inovadoras III</li>
 <li>BCC903 - Tecnologias Inovadoras IV</li>
-<li>BCC904 - Topicos em Ciencia da Computacao I</li>
-<li>BCC905 - Topicos em Ciencia da Computacao II</li>
+<li>BCC904 - Topicos em Curso de Graduacao I</li>
+<li>BCC905 - Topicos em Curso de Graduacao II</li>
 <li>BCC906 - Tecnologias Emergentes na Computacao I</li>
 <li>BCC907 - Tecnologias Emergentes na Computacao II</li>
 <li>CAT141 - Teoria de Controle I</li>
@@ -412,7 +617,7 @@ function horarios_default_data(): array {
         'intro_html' => '<p>Consulte abaixo os horarios atualizados para alunos. A secretaria pode editar este conteudo pelo painel admin.</p>',
         'schedule_html' => horarios_cc_2026_template_html(),
         'other_electives_html' => horarios_cc_2026_outras_eletivas_html(),
-        'links_html' => '<ul><li><a href="https://zeppelin10.ufop.br/HorarioAulas/index.xhtml" target="_blank" rel="noopener">Horario de Aulas UFOP (oficial)</a></li></ul>',
+        'links_html' => '<ul><li><a href="https://zeppelin10.ufop.br/HorarioAulas/index.xhtml" target="_blank" rel="noopener">Horario de Aulas institucional (oficial)</a></li></ul>',
         'source_url' => 'https://zeppelin10.ufop.br/HorarioAulas/index.xhtml',
         'last_sync' => '',
     ];
@@ -530,7 +735,7 @@ function atendimento_docentes_generate_table_html(): string {
     $table = '<div class="table-responsive"><table class="table table-bordered table-sm align-middle"><thead><tr><th>Professor(a)</th><th>Segunda</th><th>Terca</th><th>Quarta</th><th>Quinta</th><th>Sexta</th><th>Local</th></tr></thead><tbody>';
     foreach ($docentes as $idx => $d) {
         $nome = htmlspecialchars((string)($d['name'] ?? 'Docente'), ENT_QUOTES, 'UTF-8');
-        $sala = htmlspecialchars((string)($d['room'] ?? 'DECOM/ICEB'), ENT_QUOTES, 'UTF-8');
+        $sala = htmlspecialchars((string)($d['room'] ?? 'Departamento/Unidade'), ENT_QUOTES, 'UTF-8');
         $seg = ($idx % 2 === 0) ? $slots[$idx % count($slots)] : '';
         $ter = ($idx % 3 === 0) ? $slots[($idx + 1) % count($slots)] : '';
         $qua = ($idx % 2 !== 0) ? $slots[($idx + 2) % count($slots)] : '';
@@ -552,10 +757,10 @@ function atendimento_docentes_generate_table_html(): string {
 function atendimento_docentes_default_data(): array {
     return [
         'title' => 'Horarios de Atendimento dos Docentes',
-        'summary' => 'Tabela semanal de atendimento aos alunos por professor do DECOM.',
+        'summary' => 'Tabela semanal de atendimento aos alunos por professor do departamento.',
         'intro_html' => '<p>Consulte os horarios de atendimento docente abaixo. Esta pagina e atualizada pela secretaria via painel admin.</p>',
         'table_html' => atendimento_docentes_generate_table_html(),
-        'notes_html' => '<p><small>Referencia institucional: planos de trabalho e atendimento publicados pelo DECOM/UFOP.</small></p>',
+        'notes_html' => '<p><small>Referencia institucional: planos de trabalho e atendimento publicados pelo departamento.</small></p>',
         'source_url' => 'https://www3.decom.ufop.br/decom/pessoal/planos_trabalho_publico/',
         'last_sync' => '',
     ];
@@ -612,14 +817,156 @@ function normalize_menu_url(string $url, string $fallback): string {
 function primary_menu_item(string $slot): array {
     $defaults = [
         'graduacao' => ['label' => 'Graduacao', 'url' => '/ensino/ciencia-computacao.php'],
-        'pos_graduacao' => ['label' => 'Pós graduação', 'url' => '/ensino/pos-graduacao.php'],
+        'pos_graduacao' => ['label' => 'PÃ³s-graduaÃ§Ã£o', 'url' => '/ensino/pos-graduacao.php'],
     ];
     $default = $defaults[$slot] ?? ['label' => 'Menu', 'url' => '/'];
     $label = trim(site_setting_get('menu_' . $slot . '_label', $default['label']));
+    if ($slot === 'pos_graduacao' && $label === 'Pos-graduacao') {
+        $label = 'PÃ³s-graduaÃ§Ã£o';
+    }
     $url = normalize_menu_url(site_setting_get('menu_' . $slot . '_url', $default['url']), $default['url']);
     return [
         'label' => $label !== '' ? $label : $default['label'],
         'url' => $url,
+    ];
+}
+function easter_date_ymd(int $year): string {
+    $a = $year % 19;
+    $b = intdiv($year, 100);
+    $c = $year % 100;
+    $d = intdiv($b, 4);
+    $e = $b % 4;
+    $f = intdiv($b + 8, 25);
+    $g = intdiv($b - $f + 1, 3);
+    $h = (19 * $a + $b - $d - $g + 15) % 30;
+    $i = intdiv($c, 4);
+    $k = $c % 4;
+    $l = (32 + 2 * $e + 2 * $i - $h - $k) % 7;
+    $m = intdiv($a + 11 * $h + 22 * $l, 451);
+    $month = intdiv($h + $l - 7 * $m + 114, 31);
+    $day = (($h + $l - 7 * $m + 114) % 31) + 1;
+    return sprintf('%04d-%02d-%02d', $year, $month, $day);
+}
+function date_add_days(string $ymd, int $days): string {
+    $dt = DateTimeImmutable::createFromFormat('Y-m-d', $ymd);
+    if (!$dt) {
+        return $ymd;
+    }
+    return $dt->modify(($days >= 0 ? '+' : '') . $days . ' days')->format('Y-m-d');
+}
+function ufop_holidays_for_year(int $year): array {
+    $easter = easter_date_ymd($year);
+    $list = [
+        sprintf('%04d-01-01', $year) => 'Confraternizacao Universal',
+        date_add_days($easter, -48) => 'Carnaval (ponto facultativo)',
+        date_add_days($easter, -47) => 'Carnaval (ponto facultativo)',
+        date_add_days($easter, -2) => 'Paixao de Cristo',
+        date_add_days($easter, -1) => 'Sabado de Aleluia (ponto facultativo)',
+        date_add_days($easter, 60) => 'Corpus Christi (ponto facultativo)',
+        sprintf('%04d-04-21', $year) => 'Tiradentes',
+        sprintf('%04d-05-01', $year) => 'Dia do Trabalho',
+        sprintf('%04d-09-07', $year) => 'Independencia do Brasil',
+        sprintf('%04d-10-12', $year) => 'Nossa Senhora Aparecida',
+        sprintf('%04d-11-02', $year) => 'Finados',
+        sprintf('%04d-11-15', $year) => 'Proclamacao da Republica',
+        sprintf('%04d-11-20', $year) => 'Dia da Consciencia Negra',
+        sprintf('%04d-12-25', $year) => 'Natal',
+    ];
+    return $list;
+}
+function ufop_month_pt_to_number(string $month): int {
+    $m = strtolower(trim($month));
+    $m = strtr($m, ['Ã§' => 'c', 'Ã£' => 'a', 'Ã¡' => 'a', 'Ã¢' => 'a', 'Ã©' => 'e']);
+    $map = [
+        'janeiro' => 1,
+        'fevereiro' => 2,
+        'marco' => 3,
+        'marco.' => 3,
+        'marÃ§o' => 3,
+        'abril' => 4,
+        'maio' => 5,
+        'junho' => 6,
+        'julho' => 7,
+        'agosto' => 8,
+        'setembro' => 9,
+        'outubro' => 10,
+        'novembro' => 11,
+        'dezembro' => 12,
+    ];
+    return $map[$m] ?? 0;
+}
+function ufop_fetch_current_calendar_events(int $year, int $month): array {
+    $eventsByDay = [];
+    try {
+        $stmt = db()->prepare(
+            "SELECT title, category, published_at
+             FROM news_items
+             WHERE YEAR(published_at) = :y
+               AND MONTH(published_at) = :m
+               AND (
+                    LOWER(COALESCE(category, '')) LIKE '%evento%'
+                    OR LOWER(COALESCE(title, '')) LIKE '%evento%'
+               )
+             ORDER BY published_at ASC, id ASC
+             LIMIT 200"
+        );
+        $stmt->execute([':y' => $year, ':m' => $month]);
+        foreach (($stmt->fetchAll() ?: []) as $row) {
+            $publishedAt = (string)($row['published_at'] ?? '');
+            $day = (int)substr($publishedAt, 8, 2);
+            if ($day < 1 || $day > 31) {
+                continue;
+            }
+            $title = trim((string)($row['title'] ?? 'Evento do departamento'));
+            $eventsByDay[$day][] = [
+                'type' => 'event',
+                'title' => $title !== '' ? $title : 'Evento do departamento',
+                'source' => 'Departamento',
+            ];
+        }
+    } catch (Throwable $e) {
+        error_log('Failed loading department events for calendar: ' . $e->getMessage());
+    }
+    return $eventsByDay;
+}
+function ufop_student_calendar(int $year = 0, int $month = 0): array {
+    $now = new DateTimeImmutable('now');
+    $year = $year > 0 ? $year : (int)$now->format('Y');
+    $month = ($month >= 1 && $month <= 12) ? $month : (int)$now->format('n');
+
+    $first = DateTimeImmutable::createFromFormat('Y-n-j', $year . '-' . $month . '-1');
+    if (!$first) {
+        $first = $now->modify('first day of this month');
+    }
+
+    $daysInMonth = (int)$first->format('t');
+    $firstDow = (int)$first->format('w'); // 0=dom ... 6=sab
+
+    $holidays = ufop_holidays_for_year($year);
+    $events = ufop_fetch_current_calendar_events($year, $month);
+    $dayMap = [];
+    for ($d = 1; $d <= $daysInMonth; $d++) {
+        $ymd = sprintf('%04d-%02d-%02d', $year, $month, $d);
+        $dayMap[$d] = [];
+        if (isset($holidays[$ymd])) {
+            $dayMap[$d][] = ['type' => 'holiday', 'title' => $holidays[$ymd], 'source' => 'Calendario oficial'];
+        }
+        foreach (($events[$d] ?? []) as $ev) {
+            $dayMap[$d][] = $ev;
+        }
+    }
+
+    $monthNames = [1 => 'Janeiro', 'Fevereiro', 'Marco', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    return [
+        'year' => $year,
+        'month' => $month,
+        'month_name' => $monthNames[$month] ?? (string)$month,
+        'days_in_month' => $daysInMonth,
+        'first_dow' => $firstDow,
+        'weekdays' => ['d', 's', 't', 'q', 'q', 's', 's'],
+        'days' => $dayMap,
+        'source_url' => 'https://www.prograd.ufop.br/calendario-academico',
+        'source_label' => 'Calendario oficial UFOP (PROGRAD)',
     ];
 }
 function ensure_ppgcc_tables(): void {
@@ -692,7 +1039,7 @@ function ensure_ppgcc_tables(): void {
             ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
         );
     } catch (Throwable $e) {
-        error_log('Failed ensuring PPGCC tables: ' . $e->getMessage());
+        error_log('Failed ensuring post-graduation tables: ' . $e->getMessage());
     }
 }
 function simple_slugify(string $text): string {
@@ -727,8 +1074,8 @@ function ppgcc_notice_unique_slug(string $base, ?int $ignoreId = null): string {
 }
 function ppgcc_default_content(): array {
     return [
-        'title' => 'Pos-graduacao em Computacao',
-        'intro_html' => '<p>O PPGCC/UFOP oferece Mestrado e Doutorado em Ciencia da Computacao, com foco em pesquisa, inovacao tecnologica e formacao docente.</p>',
+        'title' => 'Pos-graduacao do Departamento',
+        'intro_html' => '<p>A pos-graduacao do departamento oferece formacao academica avancada com foco em pesquisa, inovacao e qualificacao docente.</p>',
         'ingresso_html' => '<p>O ingresso ocorre por edital de processo seletivo. Os criterios incluem analise documental, etapas definidas em edital e requisitos academicos para cada nivel.</p>',
         'editais_html' => '<p>Editais recentes incluem selecao para ingresso (mestrado e doutorado), bolsa de doutorado e oportunidades de doutorado sanduiche (PDSE).</p>',
         'grade_html' => '<p>A grade curricular inclui disciplinas basicas e eletivas. Carga minima de creditos: mestrado (24) e doutorado (36), conforme normas do programa.</p>',
@@ -782,7 +1129,7 @@ function ppgcc_content_save(array $data): void {
          WHERE id = 1'
     );
     $stmt->execute([
-        ':title' => trim((string)($data['title'] ?? 'Pos-graduacao em Computacao')),
+        ':title' => trim((string)($data['title'] ?? 'Pos-graduacao do Departamento')),
         ':intro_html' => sanitize_rich_text((string)($data['intro_html'] ?? '')),
         ':ingresso_html' => sanitize_rich_text((string)($data['ingresso_html'] ?? '')),
         ':editais_html' => sanitize_rich_text((string)($data['editais_html'] ?? '')),
@@ -1045,7 +1392,7 @@ function ppgcc_import_subsite_pages(): array {
             }
         }
         if ($title === '') {
-            $title = $normalize((string)($x->query('//title')->item(0)?->textContent ?? 'Pagina PPGCC'));
+            $title = $normalize((string)($x->query('//title')->item(0)?->textContent ?? 'Pagina da Pos-graduacao'));
         }
 
         $blocks = [];
@@ -1485,7 +1832,7 @@ function require_admin_permission(string $permission): void {
         return;
     }
     http_response_code(403);
-    echo '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Acesso negado</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"></head><body class="bg-light"><main class="container py-5"><div class="alert alert-danger"><h1 class="h4 mb-2">Acesso negado</h1><p class="mb-0">Sua conta nao possui permissao para acessar este modulo.</p></div><a class="btn btn-primary" href="/admin/dashboard.php">Voltar ao painel</a></main></body></html>';
+    echo '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Acesso negado</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"></head><body class="bg-light"><main class="container py-5"><div class="alert alert-danger"><h1 class="h4 mb-2">Acesso negado</h1><p class="mb-0">Sua conta nao possui permissao para acessar este modulo.</p></div><div class="d-flex gap-2"><a class="btn btn-primary" href="/admin/dashboard.php">Voltar ao painel</a><a class="btn btn-outline-secondary" href="/">Voltar ao site</a></div></main></body></html>';
     exit;
 }
 function csrf_token(): string {
@@ -1632,7 +1979,7 @@ function demo_defesas(): array {
         error_log('Failed loading defesa_items: ' . $e->getMessage());
     }
     return [
-      ['slug'=>'defesas-monografia-2026-1','title'=>'Defesas de monografia 2026/1','summary'=>'Agenda de bancas de monografia do semestre.','category'=>'Defesas','content'=>'Conteúdo demonstrativo para defesas.','image'=>'/assets/cards/noticia-pesquisa.svg']
+      ['slug'=>'defesas-monografia-2026-1','title'=>'Defesas de monografia 2026/1','summary'=>'Agenda de bancas de monografia do semestre.','category'=>'Defesas','content'=>'ConteÃƒÂºdo demonstrativo para defesas.','image'=>'/assets/cards/noticia-pesquisa.svg']
     ];
 }
 function demo_jobs(): array {
@@ -1645,7 +1992,7 @@ function demo_jobs(): array {
         error_log('Failed loading job_items: ' . $e->getMessage());
     }
     return [
-      ['slug'=>'vaga-estagio-web','title'=>'Vaga de estágio em desenvolvimento web','summary'=>'Empresa parceira busca estudante com noções de PHP e banco de dados.','category'=>'Carreiras','content'=>'Conteúdo demonstrativo para estágios e empregos.','image'=>'/assets/cards/noticia-portal.svg']
+      ['slug'=>'vaga-estagio-web','title'=>'Vaga de estÃƒÂ¡gio em desenvolvimento web','summary'=>'Empresa parceira busca estudante com noÃƒÂ§ÃƒÂµes de PHP e banco de dados.','category'=>'Carreiras','content'=>'ConteÃƒÂºdo demonstrativo para estÃƒÂ¡gios e empregos.','image'=>'/assets/cards/noticia-portal.svg']
     ];
 }
 function find_demo_item(string $slug): ?array {
@@ -1729,7 +2076,7 @@ function person_photo_url(array $item): string {
     if ($photo !== '') {
         return $photo;
     }
-    return person_photo_placeholder((string)($item['name'] ?? 'DECOM'));
+    return person_photo_placeholder((string)($item['name'] ?? SITE_SIGLA));
 }
 function docentes(): array {
     try {
@@ -1741,9 +2088,9 @@ function docentes(): array {
         error_log('Failed loading docente profiles: ' . $e->getMessage());
     }
     return [
-        ['name'=>'Ana Paula Ribeiro','position'=>'Professora Adjunta','degree'=>'Doutora em Ciência da Computação','website_url'=>'','lattes_url'=>'','email'=>'ana.ribeiro@ufop.edu.br','phone'=>'(31) 3559-1601','room'=>'Instituto de Ciências Exatas e Biológicas','interests'=>'Engenharia de software e sistemas distribuídos.','bio'=>'Atua em engenharia de software e sistemas distribuídos.','photo_url'=>''],
-        ['name'=>'Bruno Carvalho Mendes','position'=>'Professor Associado','degree'=>'Doutor em Ciência da Computação','website_url'=>'','lattes_url'=>'','email'=>'bruno.mendes@ufop.edu.br','phone'=>'(31) 3559-1602','room'=>'Instituto de Ciências Exatas e Biológicas','interests'=>'Inteligência artificial e mineração de dados.','bio'=>'Atua em inteligência artificial e mineração de dados.','photo_url'=>''],
-        ['name'=>'Camila Freitas Lopes','position'=>'Professora Adjunta','degree'=>'Doutora em Computação','website_url'=>'','lattes_url'=>'','email'=>'camila.lopes@ufop.edu.br','phone'=>'(31) 3559-1603','room'=>'Instituto de Ciências Exatas e Biológicas','interests'=>'Computação gráfica e IHC.','bio'=>'Atua em computação gráfica e interação humano-computador.','photo_url'=>''],
+        ['name'=>'Ana Paula Ribeiro','position'=>'Professora Adjunta','degree'=>'Doutora em CiÃƒÂªncia da ComputaÃƒÂ§ÃƒÂ£o','website_url'=>'','lattes_url'=>'','email'=>'ana.ribeiro@ufop.edu.br','phone'=>'(31) 3559-1601','room'=>'Instituto de CiÃƒÂªncias Exatas e BiolÃƒÂ³gicas','interests'=>'Engenharia de software e sistemas distribuÃƒÂ­dos.','bio'=>'Atua em engenharia de software e sistemas distribuÃƒÂ­dos.','photo_url'=>''],
+        ['name'=>'Bruno Carvalho Mendes','position'=>'Professor Associado','degree'=>'Doutor em CiÃƒÂªncia da ComputaÃƒÂ§ÃƒÂ£o','website_url'=>'','lattes_url'=>'','email'=>'bruno.mendes@ufop.edu.br','phone'=>'(31) 3559-1602','room'=>'Instituto de CiÃƒÂªncias Exatas e BiolÃƒÂ³gicas','interests'=>'InteligÃƒÂªncia artificial e mineraÃƒÂ§ÃƒÂ£o de dados.','bio'=>'Atua em inteligÃƒÂªncia artificial e mineraÃƒÂ§ÃƒÂ£o de dados.','photo_url'=>''],
+        ['name'=>'Camila Freitas Lopes','position'=>'Professora Adjunta','degree'=>'Doutora em ComputaÃƒÂ§ÃƒÂ£o','website_url'=>'','lattes_url'=>'','email'=>'camila.lopes@ufop.edu.br','phone'=>'(31) 3559-1603','room'=>'Instituto de CiÃƒÂªncias Exatas e BiolÃƒÂ³gicas','interests'=>'ComputaÃƒÂ§ÃƒÂ£o grÃƒÂ¡fica e IHC.','bio'=>'Atua em computaÃƒÂ§ÃƒÂ£o grÃƒÂ¡fica e interaÃƒÂ§ÃƒÂ£o humano-computador.','photo_url'=>''],
     ];
 }
 function funcionarios(): array {
@@ -1756,8 +2103,8 @@ function funcionarios(): array {
         error_log('Failed loading funcionario profiles: ' . $e->getMessage());
     }
     return [
-        ['name'=>'Mariana Souza Almeida','position'=>'Secretária Administrativa','degree'=>'','website_url'=>'','lattes_url'=>'','email'=>'mariana.almeida@ufop.edu.br','phone'=>'(31) 3559-1692','room'=>'Instituto de Ciências Exatas e Biológicas','interests'=>'Atendimento acadêmico e administrativo.','bio'=>'Atendimento acadêmico e administrativo do departamento.','photo_url'=>''],
-        ['name'=>'Paulo Henrique Silva','position'=>'Técnico em TI','degree'=>'','website_url'=>'','lattes_url'=>'','email'=>'paulo.silva@ufop.edu.br','phone'=>'(31) 3559-1693','room'=>'Instituto de Ciências Exatas e Biológicas','interests'=>'Infraestrutura e suporte de laboratórios.','bio'=>'Suporte de laboratórios, sistemas e infraestrutura local.','photo_url'=>''],
+        ['name'=>'Mariana Souza Almeida','position'=>'SecretÃƒÂ¡ria Administrativa','degree'=>'','website_url'=>'','lattes_url'=>'','email'=>'mariana.almeida@ufop.edu.br','phone'=>'(31) 3559-1692','room'=>'Instituto de CiÃƒÂªncias Exatas e BiolÃƒÂ³gicas','interests'=>'Atendimento acadÃƒÂªmico e administrativo.','bio'=>'Atendimento acadÃƒÂªmico e administrativo do departamento.','photo_url'=>''],
+        ['name'=>'Paulo Henrique Silva','position'=>'TÃƒÂ©cnico em TI','degree'=>'','website_url'=>'','lattes_url'=>'','email'=>'paulo.silva@ufop.edu.br','phone'=>'(31) 3559-1693','room'=>'Instituto de CiÃƒÂªncias Exatas e BiolÃƒÂ³gicas','interests'=>'Infraestrutura e suporte de laboratÃƒÂ³rios.','bio'=>'Suporte de laboratÃƒÂ³rios, sistemas e infraestrutura local.','photo_url'=>''],
     ];
 }
 function fetch_research_labs(): array {
@@ -1778,15 +2125,9 @@ function research_labs_data(): array {
         return $items;
     }
     return [
-        ['slug' => 'csilab', 'name' => 'CSILab', 'summary' => 'Laboratorio de Computacao de Sistemas Inteligentes.', 'site_url' => 'https://csilab.ufop.br/'],
-        ['slug' => 'gaid', 'name' => 'GAID', 'summary' => 'Laboratorio Tematico em Gerencia e Analise Inteligente de Dados.', 'site_url' => 'http://www.decom.ufop.br/gaid/'],
-        ['slug' => 'goal', 'name' => 'GOAL', 'summary' => 'Laboratorio Tematico em Otimizacao e Algoritmos.', 'site_url' => 'http://www.goal.ufop.br'],
-        ['slug' => 'imobilis', 'name' => 'iMobilis', 'summary' => 'Laboratorio Tematico em Computacao Movel.', 'site_url' => 'http://www2.decom.ufop.br/imobilis/'],
-        ['slug' => 'kryptolab', 'name' => 'KryptoLab', 'summary' => 'Laboratorio de Criptografia e Seguranca de Redes.', 'site_url' => 'https://kryptolab.decom.ufop.br'],
-        ['slug' => 'lcad', 'name' => 'LCAD', 'summary' => 'Laboratorio de Computacao Aplicada e Desenvolvimento.', 'site_url' => 'https://lcad.ufop.br/'],
-        ['slug' => 'lapdi', 'name' => 'LaPDI', 'summary' => 'Laboratorio Tematico em Processamento de Imagens.', 'site_url' => 'http://www.decom.ufop.br/lapdi/'],
-        ['slug' => 'terralab', 'name' => 'TerraLab', 'summary' => 'Laboratorio Tematico em Simulacao e Geoprocessamento.', 'site_url' => 'http://www.decom.ufop.br/terralab/'],
-        ['slug' => 'xr4good', 'name' => 'XR4Good', 'summary' => 'Laboratorio Tematico de Realidade Estendida.', 'site_url' => 'http://xr4goodlab.decom.ufop.br/'],
+        ['slug' => 'lab-inovacao', 'name' => 'Laboratorio de Inovacao', 'summary' => 'Pesquisa aplicada e prototipagem de solucoes tecnicas.', 'site_url' => ''],
+        ['slug' => 'lab-dados', 'name' => 'Laboratorio de Dados', 'summary' => 'Analise de dados, estatistica aplicada e apoio a decisoes.', 'site_url' => ''],
+        ['slug' => 'lab-sistemas', 'name' => 'Laboratorio de Sistemas', 'summary' => 'Arquiteturas, desenvolvimento de sistemas e infraestrutura.', 'site_url' => ''],
     ];
 }
 function fetch_research_projects(): array {
@@ -1808,42 +2149,45 @@ function research_projects_data(): array {
     }
     return [
         [
-            'slug' => 'projeto-ia-educacao',
-            'title' => 'IA aplicada ao apoio ao ensino',
+            'slug' => 'projeto-ensino-inovador',
+            'title' => 'Ensino inovador e tecnologias educacionais',
             'project_type' => 'pesquisa',
-            'summary' => 'Projeto focado em modelos de aprendizado de maquina para suporte a atividades educacionais.',
+            'summary' => 'Projeto focado em metodologias e ferramentas para melhoria do processo de ensino.',
             'site_url' => '',
-            'coordinator' => 'DECOM/UFOP',
+            'coordinator' => 'Departamento',
         ],
         [
-            'slug' => 'projeto-extensao-cultura-digital',
-            'title' => 'Cultura digital e formacao em tecnologia',
+            'slug' => 'projeto-extensao-comunidade',
+            'title' => 'Extensao e integracao com a comunidade',
             'project_type' => 'extensao',
-            'summary' => 'Projeto de extensao com oficinas e atividades para aproximar comunidade e computacao.',
+            'summary' => 'Projeto de extensao com oficinas e atividades para fortalecer a relacao com a comunidade.',
             'site_url' => '',
-            'coordinator' => 'DECOM/UFOP',
+            'coordinator' => 'Departamento',
         ],
     ];
 }
 function course_data(string $slug): array {
     $courses = [
-        'ciencia-da-computacao' => ['name'=>'Bacharelado em Ciência da Computação','summary'=>'Curso voltado à formação sólida em fundamentos da computação, algoritmos, software e sistemas.','content'=>'A proposta curricular contempla programação, algoritmos, estruturas de dados, arquitetura de computadores, bancos de dados, engenharia de software, redes e teoria da computação.','modality'=>'Bacharelado','duration'=>'8 semestres','shift'=>'Integral'],
-        'inteligencia-artificial' => ['name'=>'Bacharelado em Inteligência Artificial','summary'=>'Curso voltado à formação em aprendizado de máquina, ciência de dados e sistemas inteligentes.','content'=>'A matriz curricular inclui fundamentos matemáticos, programação, otimização, aprendizado de máquina, mineração de dados e visão computacional.','modality'=>'Bacharelado','duration'=>'8 semestres','shift'=>'Integral'],
+        'ciencia-da-computacao' => ['name'=>'Curso de Graduacao 1','summary'=>'Descricao resumida do primeiro curso de graduacao do departamento.','content'=>'Este bloco deve apresentar objetivos, estrutura curricular, perfil de formacao e possibilidades de atuacao profissional.','modality'=>'Bacharelado','duration'=>'8 semestres','shift'=>'Integral'],
+        'inteligencia-artificial' => ['name'=>'Curso de Graduacao 2','summary'=>'Descricao resumida do segundo curso de graduacao do departamento.','content'=>'Use este campo para descrever eixos formativos, componentes curriculares e diferenciais do curso.','modality'=>'Bacharelado','duration'=>'8 semestres','shift'=>'Integral'],
     ];
     return $courses[$slug] ?? ['name'=>'Curso','summary'=>'','content'=>'','modality'=>'','duration'=>'','shift'=>''];
 }
 function page_data(string $slug): array {
     $pages = [
-      'quem-somos'=>['title'=>'Quem somos','summary'=>'Apresentação institucional do departamento, sua trajetória e suas áreas de atuação.','content'=>'O Departamento de Computação atua em ensino, pesquisa e extensão, oferecendo cursos de graduação e desenvolvendo ações acadêmicas e tecnológicas.'],
-      'comunicacao-logo'=>['title'=>'Comunicação e logo','summary'=>'Diretrizes para uso do nome, identidade visual e materiais institucionais.','content'=>'Esta página pode concentrar versões do logotipo e padrões de comunicação institucional do departamento.'],
-      'localizacao'=>['title'=>'Localização','summary'=>'Informações de localização física, acesso e referência institucional.','content'=>'O departamento está localizado no campus universitário, com atendimento presencial em dias úteis.'],
-      'mapa-campus'=>['title'=>'Mapa do campus','summary'=>'Mapa de acesso e referência espacial da unidade acadêmica.','content'=>'Página preparada para receber mapa interativo ou orientações de deslocamento.'],
-      'horarios-de-aula'=>['title'=>'Horários de Aula','summary'=>'Consulta organizada dos horários de aula por curso, período ou turma.','content'=>'Esta página concentra quadros de horários dos alunos, horários por docente ou planilhas por semestre letivo.'],
-      'informacoes-uteis'=>['title'=>'Informações Úteis','summary'=>'Orientações acadêmicas, formulários e instruções operacionais para estudantes.','content'=>'Inclua aqui calendários, orientações de matrícula, aproveitamento de estudos, equivalências e monitorias.'],
-      'monografias'=>['title'=>'Monografias','summary'=>'Informações sobre disciplinas de monografia, banca, documentação e cronogramas.','content'=>'Esta página centraliza regulamentos, modelos de documentos, agendas de defesas e orientações para discentes e orientadores.'],
-      'pesquisa'=>['title'=>'Pesquisa','summary'=>'Apresentação de linhas de pesquisa, grupos, projetos e produção científica.','content'=>'Esta seção organiza laboratórios, grupos de pesquisa, projetos financiados e oportunidades de iniciação científica.'],
-      'extensao'=>['title'=>'Extensão','summary'=>'Catálogo de projetos e ações de extensão vinculados ao departamento.','content'=>'Esta seção apresenta programas, projetos, oficinas, cursos e ações extensionistas.'],
+      'quem-somos'=>['title'=>'Quem somos','summary'=>'Apresentacao institucional do departamento, sua trajetoria e suas areas de atuacao.','content'=>'Este departamento atua em ensino, pesquisa e extensao, oferecendo cursos e desenvolvendo acoes academicas para a comunidade.'],
+      'comunicacao-logo'=>['title'=>'ComunicaÃƒÂ§ÃƒÂ£o e logo','summary'=>'Diretrizes para uso do nome, identidade visual e materiais institucionais.','content'=>'Esta pÃƒÂ¡gina pode concentrar versÃƒÂµes do logotipo e padrÃƒÂµes de comunicaÃƒÂ§ÃƒÂ£o institucional do departamento.'],
+      'localizacao'=>['title'=>'LocalizaÃƒÂ§ÃƒÂ£o','summary'=>'InformaÃƒÂ§ÃƒÂµes de localizaÃƒÂ§ÃƒÂ£o fÃƒÂ­sica, acesso e referÃƒÂªncia institucional.','content'=>'O departamento estÃƒÂ¡ localizado no campus universitÃƒÂ¡rio, com atendimento presencial em dias ÃƒÂºteis.'],
+      'mapa-campus'=>['title'=>'Mapa do campus','summary'=>'Mapa de acesso e referÃƒÂªncia espacial da unidade acadÃƒÂªmica.','content'=>'PÃƒÂ¡gina preparada para receber mapa interativo ou orientaÃƒÂ§ÃƒÂµes de deslocamento.'],
+      'horarios-de-aula'=>['title'=>'HorÃƒÂ¡rios de Aula','summary'=>'Consulta organizada dos horÃƒÂ¡rios de aula por curso, perÃƒÂ­odo ou turma.','content'=>'Esta pÃƒÂ¡gina concentra quadros de horÃƒÂ¡rios dos alunos, horÃƒÂ¡rios por docente ou planilhas por semestre letivo.'],
+      'informacoes-uteis'=>['title'=>'InformaÃƒÂ§ÃƒÂµes ÃƒÅ¡teis','summary'=>'OrientaÃƒÂ§ÃƒÂµes acadÃƒÂªmicas, formulÃƒÂ¡rios e instruÃƒÂ§ÃƒÂµes operacionais para estudantes.','content'=>'Inclua aqui calendÃƒÂ¡rios, orientaÃƒÂ§ÃƒÂµes de matrÃƒÂ­cula, aproveitamento de estudos, equivalÃƒÂªncias e monitorias.'],
+      'monografias'=>['title'=>'Monografias','summary'=>'InformaÃƒÂ§ÃƒÂµes sobre disciplinas de monografia, banca, documentaÃƒÂ§ÃƒÂ£o e cronogramas.','content'=>'Esta pÃƒÂ¡gina centraliza regulamentos, modelos de documentos, agendas de defesas e orientaÃƒÂ§ÃƒÂµes para discentes e orientadores.'],
+      'pesquisa'=>['title'=>'Pesquisa','summary'=>'ApresentaÃƒÂ§ÃƒÂ£o de linhas de pesquisa, grupos, projetos e produÃƒÂ§ÃƒÂ£o cientÃƒÂ­fica.','content'=>'Esta seÃƒÂ§ÃƒÂ£o organiza laboratÃƒÂ³rios, grupos de pesquisa, projetos financiados e oportunidades de iniciaÃƒÂ§ÃƒÂ£o cientÃƒÂ­fica.'],
+      'extensao'=>['title'=>'ExtensÃƒÂ£o','summary'=>'CatÃƒÂ¡logo de projetos e aÃƒÂ§ÃƒÂµes de extensÃƒÂ£o vinculados ao departamento.','content'=>'Esta seÃƒÂ§ÃƒÂ£o apresenta programas, projetos, oficinas, cursos e aÃƒÂ§ÃƒÂµes extensionistas.'],
       'cocic'=>['title'=>'Graduacao','summary'=>'Pagina da graduacao com apresentacao do curso, estrutura academica e informacoes uteis para alunos.','content'=>'A graduacao pode publicar aqui informacoes sobre matriz curricular, orientacoes academicas, documentos, calendario e comunicados aos estudantes.'],
     ];
-    return $pages[$slug] ?? ['title'=>'Página','summary'=>'','content'=>''];
+    return $pages[$slug] ?? ['title'=>'PÃƒÂ¡gina','summary'=>'','content'=>''];
 }
+
+
+

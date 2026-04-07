@@ -57,13 +57,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 14px;
             overflow: hidden;
         }
+        .admin-login-brand {
+            font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+            font-size: 2.25rem;
+            font-weight: 700;
+            letter-spacing: .02em;
+            color: #1b2a4a;
+            line-height: 1.1;
+        }
     </style>
 </head>
 <body class="login-page bg-body-secondary">
 <div class="login-box">
     <div class="card card-outline card-primary">
         <div class="card-header text-center">
-            <a href="/" class="h1 text-decoration-none"><b>DECOM</b> Admin</a>
+            <a href="/" class="admin-login-brand text-decoration-none">Painel Administrativo</a>
         </div>
         <div class="card-body login-card-body">
             <p class="login-box-msg">Entre para gerenciar noticias e editais</p>
@@ -85,6 +93,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <button type="submit" class="btn btn-primary w-100">Entrar</button>
                     </div>
                 </div>
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <a href="/" class="btn btn-outline-secondary w-100">Voltar ao site principal</a>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
@@ -93,3 +106,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc3/dist/js/adminlte.min.js"></script>
 </body>
 </html>
+

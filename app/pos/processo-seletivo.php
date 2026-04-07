@@ -2,14 +2,14 @@
 require __DIR__ . '/../includes/config.php';
 
 $groups = ppgcc_selection_items_grouped();
-page_header('PPGCC - Processo Seletivo');
+page_header('Pos-graduacao - Processo Seletivo');
 ?>
 <div class="container py-4">
-    <h1 class="section-title h3 mb-3">Processo Seletivo do PPGCC</h1>
-    <p class="text-muted mb-4">Subsite da pos com consolidacao de editais, formularios e resultados.</p>
+    <h1 class="section-title h3 mb-3">Processo Seletivo da Pos-graduacao</h1>
+    <p class="text-muted mb-4">Consolidacao de editais, formularios e resultados.</p>
 
     <?php if (empty($groups)): ?>
-        <div class="alert alert-warning">Nenhum item de processo seletivo importado.</div>
+        <div class="alert alert-warning">Nenhum item de processo seletivo cadastrado.</div>
     <?php else: ?>
         <?php foreach ($groups as $groupTitle => $items): ?>
             <div class="card news-card mb-3">

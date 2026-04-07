@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 declare(strict_types=1);
 
 require_once __DIR__ . '/../includes/config.php';
@@ -73,3 +73,4 @@ if (!move_uploaded_file($tmp, $destination)) {
 }
 
 echo json_encode(['location' => $relativeDir . '/' . $filename]);
+

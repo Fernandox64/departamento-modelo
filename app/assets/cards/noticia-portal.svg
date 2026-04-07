@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675">
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675">
   <defs>
     <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#0d3b66"/>
@@ -9,5 +9,6 @@
   <circle cx="1040" cy="120" r="140" fill="#ffffff22"/>
   <circle cx="1080" cy="560" r="180" fill="#ffffff1a"/>
   <text x="80" y="330" font-family="Arial, sans-serif" font-size="74" font-weight="700" fill="#ffffff">Portal Institucional</text>
-  <text x="80" y="390" font-family="Arial, sans-serif" font-size="34" fill="#e6f2ff">Ambiente de teste do DECOM</text>
+  <text x="80" y="390" font-family="Arial, sans-serif" font-size="34" fill="#e6f2ff">Ambiente de teste do portal</text>
 </svg>
+

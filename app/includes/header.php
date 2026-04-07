@@ -2,6 +2,19 @@
 header('Content-Type: text/html; charset=UTF-8');
 $menuGraduacao = primary_menu_item('graduacao');
 $menuPosGraduacao = primary_menu_item('pos_graduacao');
+$themeInlineCss = current_site_palette_inline_css();
+$topbarDepartmentName = trim(site_setting_get('topbar_department_name', 'Departamento Exemplo'));
+$topbarPhone = trim(site_setting_get('topbar_phone', SITE_PHONE));
+$topbarEmail = trim(site_setting_get('topbar_email', SITE_EMAIL));
+if ($topbarDepartmentName === '') {
+    $topbarDepartmentName = 'Departamento Exemplo';
+}
+if ($topbarPhone === '') {
+    $topbarPhone = SITE_PHONE;
+}
+if ($topbarEmail === '') {
+    $topbarEmail = SITE_EMAIL;
+}
 ?>
 <!doctype html>
 <html lang="pt-BR">
@@ -12,23 +25,20 @@ $menuPosGraduacao = primary_menu_item('pos_graduacao');
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <link href="/assets/css/theme.css" rel="stylesheet">
+<style><?= $themeInlineCss ?></style>
 </head>
 <body>
 <div class="topbar py-2">
     <div class="container d-flex flex-wrap justify-content-between gap-2">
-        <div><?= e(SITE_UNIVERSITY) ?> · <?= e(SITE_SIGLA) ?></div>
-        <div><?= e(SITE_PHONE) ?> · <?= e(SITE_EMAIL) ?></div>
+        <div class="topbar-brand-text">Universidade Federal de Ouro Preto | <?= e($topbarDepartmentName) ?></div>
+        <div><?= e($topbarPhone) ?> | <?= e($topbarEmail) ?></div>
     </div>
 </div>
 
 <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="/" title="DECOM UFOP" style="height:40px;padding-top:0;padding-bottom:0;overflow:visible;">
-            <img
-                src="https://www.decom.ufop.br/decom/site_media/img/decom_logo.png"
-                alt="Logo DECOM UFOP"
-                style="height:48px;width:auto;display:block"
-            >
+        <a class="navbar-brand d-flex align-items-center fw-semibold" href="/" title="<?= e(SITE_NAME) ?>">
+            <?= e(SITE_SIGLA) ?>
         </a>
         <button
             class="navbar-toggler"
@@ -46,7 +56,7 @@ $menuPosGraduacao = primary_menu_item('pos_graduacao');
                 <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">DECOM</a>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Departamento</a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="/decom/quem-somos.php">Quem somos</a></li>
                         <li><a class="dropdown-item" href="/decom/comunicacao-logo.php">Comunicacao e logo</a></li>
@@ -77,12 +87,12 @@ $menuPosGraduacao = primary_menu_item('pos_graduacao');
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Ensino</a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/ensino/ciencia-computacao.php">Ciencia da Computacao</a></li>
-                        <li><a class="dropdown-item" href="/pos/inicio.php">Pos-graduacao em Computacao (Subsite)</a></li>
+                        <li><a class="dropdown-item" href="/ensino/ciencia-computacao.php">Curso de Graduacao 1</a></li>
+                        <li><a class="dropdown-item" href="/pos/inicio.php">Pos-graduacao (Subsite)</a></li>
                         <li><a class="dropdown-item" href="/pos/noticias.php">Noticias da Pos</a></li>
                         <li><a class="dropdown-item" href="/pos/editais.php">Editais da Pos</a></li>
-                        <li><a class="dropdown-item" href="/pos/processo-seletivo.php">Processo Seletivo (PPGCC)</a></li>
-                        <li><a class="dropdown-item" href="/ensino/inteligencia-artificial.php">Inteligencia Artificial</a></li>
+                        <li><a class="dropdown-item" href="/pos/processo-seletivo.php">Processo Seletivo</a></li>
+                        <li><a class="dropdown-item" href="/ensino/inteligencia-artificial.php">Curso de Graduacao 2</a></li>
                         <li><a class="dropdown-item" href="/ensino/horarios-de-aula.php">Horarios de Aula</a></li>
                         <li><a class="dropdown-item" href="/ensino/informacoes-uteis.php">Informacoes Uteis</a></li>
                         <li><a class="dropdown-item" href="/ensino/monografias.php">Monografias</a></li>
@@ -109,8 +119,6 @@ $menuPosGraduacao = primary_menu_item('pos_graduacao');
                     </ul>
                 </li>
 
-                <li class="nav-item"><a class="nav-link" href="/pessoal/atendimento-docentes.php">Atendimento</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ensino/horarios-de-aula.php">Horario</a></li>
                 <li class="nav-item"><a class="nav-link" href="/contato/index.php">Contato</a></li>
             </ul>
 

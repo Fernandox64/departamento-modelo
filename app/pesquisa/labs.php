@@ -6,7 +6,7 @@ page_header('Laboratorios de Pesquisa');
 ?>
 <div class="container py-4">
     <h1 class="section-title h3 mb-4">Laboratorios de Pesquisa</h1>
-    <p class="text-muted mb-4">Conheca os laboratorios e linhas de trabalho desenvolvidas no DECOM.</p>
+    <p class="text-muted mb-4">Conheca os laboratorios e linhas de trabalho do departamento.</p>
 
     <div class="row g-4">
         <?php foreach ($labs as $lab): ?>

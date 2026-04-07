@@ -24,6 +24,13 @@ body {
     color: #fff;
 }
 
+.topbar-brand-text {
+    font-family: "Arial Narrow", "Roboto Condensed", "Segoe UI", sans-serif;
+    font-size: 1.02rem;
+    font-weight: 600;
+    letter-spacing: .01em;
+}
+
 .navbar.bg-body-tertiary {
     background: #fff !important;
     box-shadow: 0 8px 22px rgba(17, 31, 162, .1);
@@ -105,6 +112,20 @@ body {
     right: 1.25rem;
     bottom: 1.5rem;
     text-shadow: 0 2px 8px rgba(0, 0, 0, .45);
+    color: #fff !important;
+}
+
+.hero-carousel .carousel-caption h1,
+.hero-carousel .carousel-caption h2,
+.hero-carousel .carousel-caption p,
+.hero-carousel .carousel-caption span {
+    color: #fff !important;
+}
+
+.hero-badge {
+    color: #fff !important;
+    background: rgba(255, 255, 255, .16) !important;
+    border: 1px solid rgba(255, 255, 255, .5) !important;
 }
 
 .hero-carousel .carousel-caption .lead {
@@ -179,6 +200,35 @@ body {
 .side-widget .side-widget-link:active {
     color: #0a1270;
     text-decoration-color: #0a1270;
+}
+
+.student-calendar-bs {
+    --bs-table-bg: transparent;
+    --bs-table-color: #fff;
+    --bs-table-border-color: rgba(255, 255, 255, .28);
+    font-size: .86rem;
+}
+
+.student-calendar-bs th,
+.student-calendar-bs td {
+    width: 14.28%;
+    min-width: 2rem;
+}
+
+.student-day-empty {
+    background: rgba(255, 255, 255, .08) !important;
+}
+
+.student-day-holiday {
+    background: rgba(220, 53, 69, .28) !important;
+}
+
+.student-day-event {
+    box-shadow: inset 0 -3px 0 rgba(255, 193, 7, .95);
+}
+
+.student-calendar-feed .list-group-item {
+    font-size: .82rem;
 }
 
 footer.border-top {

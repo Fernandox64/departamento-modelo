@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require __DIR__ . '/includes/config.php';
 
 $news = array_slice(demo_news(), 0, 6);
@@ -8,6 +8,8 @@ $jobs = demo_jobs();
 $menuGraduacao = primary_menu_item('graduacao');
 $menuPosGraduacao = primary_menu_item('pos_graduacao');
 $heroSlides = hero_carousel_get();
+$showStudentCalendar = site_setting_get('show_student_calendar', '1') !== '0';
+$studentCalendar = $showStudentCalendar ? ufop_student_calendar() : null;
 
 page_header('Inicio');
 ?>
@@ -33,7 +35,7 @@ page_header('Inicio');
                             <div class="carousel-item<?= $idx === 0 ? ' active' : '' ?>">
                                 <img src="<?= e((string)$slide['image']) ?>" class="d-block w-100 hero-slide-image" alt="<?= e((string)$slide['title']) ?>">
                                 <div class="carousel-caption text-start">
-                                    <span class="badge text-bg-light mb-2"><?= e((string)$slide['badge']) ?></span>
+                                    <span class="badge hero-badge mb-2"><?= e((string)$slide['badge']) ?></span>
                                     <?php if ($idx === 0): ?>
                                         <h1 class="display-6 fw-bold mb-2"><?= e((string)$slide['title']) ?></h1>
                                     <?php else: ?>
@@ -44,7 +46,6 @@ page_header('Inicio');
                                         <div class="d-flex flex-wrap gap-2">
                                             <a class="btn btn-light" href="/noticias/index.php">Ultimas noticias</a>
                                             <a class="btn btn-outline-light" href="/noticias/editais.php">Editais</a>
-                                            <a class="btn btn-outline-light" href="/admin/dashboard.php">Area admin</a>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -67,8 +68,8 @@ page_header('Inicio');
                         <h2 class="h5">Acesso rapido</h2>
                         <div class="list-group list-group-flush">
                             <a class="list-group-item list-group-item-action bg-transparent text-white" href="/pessoal/docentes.php">Docentes</a>
-                            <a class="list-group-item list-group-item-action bg-transparent text-white" href="/ensino/ciencia-computacao.php">Curso de Ciencia da Computacao</a>
-                            <a class="list-group-item list-group-item-action bg-transparent text-white" href="/ensino/inteligencia-artificial.php">Curso de Inteligencia Artificial</a>
+                            <a class="list-group-item list-group-item-action bg-transparent text-white" href="/ensino/ciencia-computacao.php">Curso de Graduacao 1</a>
+                            <a class="list-group-item list-group-item-action bg-transparent text-white" href="/ensino/inteligencia-artificial.php">Curso de Graduacao 2</a>
                             <a class="list-group-item list-group-item-action bg-transparent text-white" href="<?= e((string)$menuGraduacao['url']) ?>"><?= e((string)$menuGraduacao['label']) ?></a>
                             <a class="list-group-item list-group-item-action bg-transparent text-white" href="<?= e((string)$menuPosGraduacao['url']) ?>"><?= e((string)$menuPosGraduacao['label']) ?></a>
                         </div>
@@ -107,6 +108,91 @@ page_header('Inicio');
                         <a class="btn btn-primary btn-sm" href="/pessoal/atendimento-docentes.php">Atendimento Docentes</a>
                         <a class="btn btn-outline-secondary btn-sm" href="/ensino/horarios-de-aula.php">Horarios de Aula</a>
                     </div>
+                    <?php if ($showStudentCalendar && is_array($studentCalendar)): ?>
+                    <div class="card mt-3 bg-transparent border-light-subtle text-white">
+                        <div class="card-body p-2 p-md-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h3 class="h6 mb-0">Calendario oficial UFOP</h3>
+                                <a href="<?= e((string)$studentCalendar['source_url']) ?>" class="btn btn-outline-light btn-sm py-1 px-2" target="_blank" rel="noopener">Abrir PROGRAD</a>
+                            </div>
+                            <p class="small mb-2 opacity-75"><?= e((string)($studentCalendar['source_label'] ?? '')) ?> | <?= e((string)$studentCalendar['month_name']) ?> <?= e((string)$studentCalendar['year']) ?></p>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered align-middle text-center mb-2 student-calendar-bs">
+                                    <thead>
+                                        <tr>
+                                            <?php foreach ($studentCalendar['weekdays'] as $w): ?>
+                                                <th class="small fw-semibold"><?= e((string)$w) ?></th>
+                                            <?php endforeach; ?>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $day = 1;
+                                        $firstDow = (int)$studentCalendar['first_dow'];
+                                        $daysInMonth = (int)$studentCalendar['days_in_month'];
+                                        for ($row = 0; $row < 6 && $day <= $daysInMonth; $row++):
+                                        ?>
+                                            <tr>
+                                                <?php for ($col = 0; $col < 7; $col++): ?>
+                                                    <?php if (($row === 0 && $col < $firstDow) || $day > $daysInMonth): ?>
+                                                        <td class="student-day-empty"></td>
+                                                    <?php else: ?>
+                                                        <?php
+                                                        $items = (array)($studentCalendar['days'][$day] ?? []);
+                                                        $hasHoliday = false;
+                                                        $hasEvent = false;
+                                                        foreach ($items as $it) {
+                                                            $t = (string)($it['type'] ?? '');
+                                                            if ($t === 'holiday') {
+                                                                $hasHoliday = true;
+                                                            } elseif ($t === 'event') {
+                                                                $hasEvent = true;
+                                                            }
+                                                        }
+                                                        ?>
+                                                        <td class="<?= $hasHoliday ? 'student-day-holiday' : '' ?> <?= $hasEvent ? 'student-day-event' : '' ?>"><span><?= e((string)$day) ?></span></td>
+                                                        <?php $day++; ?>
+                                                    <?php endif; ?>
+                                                <?php endfor; ?>
+                                            </tr>
+                                        <?php endfor; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="d-flex gap-2 flex-wrap mb-2">
+                                <span class="badge text-bg-danger">Feriado</span>
+                                <span class="badge text-bg-warning">Evento</span>
+                            </div>
+                            <ul class="list-group list-group-flush small student-calendar-feed">
+                                <?php
+                                $printed = 0;
+                                for ($d = 1; $d <= (int)$studentCalendar['days_in_month']; $d++) {
+                                    foreach ((array)($studentCalendar['days'][$d] ?? []) as $it) {
+                                        if ($printed >= 4) {
+                                            break 2;
+                                        }
+                                ?>
+                                    <li class="list-group-item px-0 py-1 bg-transparent text-white border-light-subtle">
+                                        <strong><?= e((string)$d) ?>:</strong>
+                                        <?php if (((string)($it['type'] ?? '')) === 'holiday'): ?>
+                                            <span class="badge text-bg-danger">Feriado</span>
+                                        <?php else: ?>
+                                            <span class="badge text-bg-warning">Evento do departamento</span>
+                                        <?php endif; ?>
+                                        <?= e((string)($it['title'] ?? '')) ?>
+                                    </li>
+                                <?php
+                                        $printed++;
+                                    }
+                                }
+                                if ($printed === 0):
+                                ?>
+                                    <li class="list-group-item px-0 py-1 bg-transparent text-white border-light-subtle">Sem eventos/feriados publicados para este mes.</li>
+                                <?php endif; ?>
+                            </ul>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
             <?php foreach (['Editais' => $editais, 'Defesas' => $defesas, 'Estagios e Empregos' => $jobs] as $title => $items): ?>
@@ -129,10 +215,10 @@ page_header('Inicio');
     <div class="card news-card mt-4">
         <div class="card-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
-                <h2 class="h4 mb-2">Quero ingressar em Ciencia da Computacao (UFOP)</h2>
+                <h2 class="h4 mb-2">Quero ingressar em um curso de graduacao</h2>
                 <p class="mb-0 text-muted">
-                    Veja um apanhado geral do curso com descricao, eixos da grade curricular, avaliacao no MEC
-                    e referencia de nota para ingresso via SISU/ENEM.
+                    Veja um apanhado geral do curso com descricao, eixos da grade curricular,
+                    avaliacao institucional e orientacoes de ingresso.
                 </p>
             </div>
             <a class="btn btn-primary" href="/ensino/ciencia-computacao.php">Ver guia do ingressante</a>
@@ -142,7 +228,7 @@ page_header('Inicio');
     <div class="card news-card mt-4">
         <div class="card-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
-                <h2 class="h4 mb-2">Pos-graduacao em Computacao (PPGCC)</h2>
+                <h2 class="h4 mb-2">Pos-graduacao do departamento</h2>
                 <p class="mb-0 text-muted">
                     As noticias e editais da pos agora ficam em paginas separadas, exclusivas da pos-graduacao.
                 </p>

@@ -9,7 +9,7 @@ $page = min($page, $totalPages);
 $offset = ($page - 1) * $perPage;
 $items = ppgcc_notices_by_type('edital', $perPage, true, $offset);
 
-page_header('PPGCC - Editais');
+page_header('Pos-graduacao - Editais');
 ?>
 <div class="container py-4">
     <h1 class="section-title h3 mb-3">Editais da Pos-graduacao</h1>
@@ -35,47 +35,5 @@ page_header('PPGCC - Editais');
             <div class="col-12"><div class="alert alert-warning mb-0">Nenhum edital da pos publicado.</div></div>
         <?php endif; ?>
     </div>
-
-    <?php if ($totalPages > 1): ?>
-        <?php
-            $maxVisiblePages = 10;
-            $windowStart = max(1, $page - intdiv($maxVisiblePages, 2));
-            $windowEnd = min($totalPages, $windowStart + $maxVisiblePages - 1);
-            if (($windowEnd - $windowStart + 1) < $maxVisiblePages) {
-                $windowStart = max(1, $windowEnd - $maxVisiblePages + 1);
-            }
-        ?>
-        <nav class="mt-4" aria-label="Paginacao de editais da pos">
-            <ul class="pagination">
-                <li class="page-item<?= $page <= 1 ? ' disabled' : '' ?>">
-                    <a class="page-link" href="/pos/editais.php?pagina=<?= e((string)max(1, $page - 1)) ?>">Anterior</a>
-                </li>
-                <?php if ($windowStart > 1): ?>
-                    <li class="page-item">
-                        <a class="page-link" href="/pos/editais.php?pagina=1">1</a>
-                    </li>
-                <?php endif; ?>
-                <?php if ($windowStart > 2): ?>
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                <?php endif; ?>
-                <?php for ($p = $windowStart; $p <= $windowEnd; $p++): ?>
-                    <li class="page-item<?= $p === $page ? ' active' : '' ?>">
-                        <a class="page-link" href="/pos/editais.php?pagina=<?= e((string)$p) ?>"><?= e((string)$p) ?></a>
-                    </li>
-                <?php endfor; ?>
-                <?php if ($windowEnd < $totalPages - 1): ?>
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                <?php endif; ?>
-                <?php if ($windowEnd < $totalPages): ?>
-                    <li class="page-item">
-                        <a class="page-link" href="/pos/editais.php?pagina=<?= e((string)$totalPages) ?>"><?= e((string)$totalPages) ?></a>
-                    </li>
-                <?php endif; ?>
-                <li class="page-item<?= $page >= $totalPages ? ' disabled' : '' ?>">
-                    <a class="page-link" href="/pos/editais.php?pagina=<?= e((string)min($totalPages, $page + 1)) ?>">Proxima</a>
-                </li>
-            </ul>
-        </nav>
-    <?php endif; ?>
 </div>
 <?php page_footer(); ?>

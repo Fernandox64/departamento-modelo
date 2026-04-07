@@ -1,12 +1,12 @@
 services:
   app:
     build: .
-    container_name: decom-static-app
+    container_name: departamento-template-app
     depends_on:
       db:
         condition: service_healthy
     ports:
-      - "8080:80"
+      - "8090:80"
     environment:
       DB_HOST: db
       DB_PORT: 3306
@@ -19,7 +19,7 @@ services:
 
   db:
     image: mysql:8.0
-    container_name: decom-static-db
+    container_name: departamento-template-db
     environment:
       MYSQL_DATABASE: newsdb
       MYSQL_USER: newsuser
@@ -43,7 +43,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin:5-apache
-    container_name: decom-static-phpmyadmin
+    container_name: departamento-template-phpmyadmin
     depends_on:
       db:
         condition: service_healthy

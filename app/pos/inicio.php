@@ -4,14 +4,11 @@ require __DIR__ . '/../includes/config.php';
 ensure_ppgcc_tables();
 $pages = ppgcc_pages_list(true);
 
-page_header('PPGCC - Subsite da Pos');
+page_header('Subsite da Pos-graduacao');
 ?>
 <div class="container py-4">
-    <h1 class="section-title h3 mb-3">PPGCC - Subsite da Pos-graduacao</h1>
-    <p class="text-muted mb-4">
-        Subsite interno da pos-graduacao em Ciencia da Computacao dentro do portal DECOM.
-        Conteudos institucionais importados da base antiga e administrados no mesmo painel.
-    </p>
+    <h1 class="section-title h3 mb-3">Subsite da Pos-graduacao</h1>
+    <p class="text-muted mb-4">Area dedicada a paginas institucionais, noticias e editais da pos-graduacao do departamento.</p>
 
     <div class="card shadow-sm mb-4">
         <div class="card-body d-flex flex-wrap gap-2">
@@ -34,7 +31,7 @@ page_header('PPGCC - Subsite da Pos');
             </div>
         <?php endforeach; ?>
         <?php if (empty($pages)): ?>
-            <div class="col-12"><div class="alert alert-warning mb-0">Nenhuma pagina institucional da pos foi importada ainda.</div></div>
+            <div class="col-12"><div class="alert alert-warning mb-0">Nenhuma pagina institucional da pos foi cadastrada ainda.</div></div>
         <?php endif; ?>
     </div>
 </div>
